@@ -613,7 +613,7 @@
         <section id="cam-grid">
           <!-- CCTV -->
           <div class="cam-card" data-cam="cctv">
-            <div class="card-header"><strong>CCTV Real-time suspicious object detection by our proposed model.</strong><span class="badge" id="status-cctv">OFF</span></div>
+            <div class="card-header"><strong>CCTV("Real-time suspicious object detection by our proposed model.")</strong><span class="badge" id="status-cctv">OFF</span></div>
             <div class="feed-wrap">
               <video class="cam-video" data-cam="cctv" autoplay playsinline muted></video>
               <canvas class="overlay" data-cam="cctv"></canvas>
@@ -623,6 +623,8 @@
               <button class="btn stop" data-cam="cctv">Stop</button>
               <button class="btn record" data-cam="cctv">Record</button>
               <button class="btn snap" data-cam="cctv">Snapshot</button> <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+<button class="btn screen-exception" data-cam="drone" style="background-color:#007BFF">feedback</button>
+
 
              
               <div class="tamper-ind" id="tamper-cctv">OK</div>
@@ -633,7 +635,7 @@
 
 <div class="cam-card" data-cam="drone">
   <div class="card-header">
-    <strong> Orignal video (input)</strong>
+    <strong>Real-time suspicious movement detected by our proposed model orignal video</strong>
     <span class="badge" id="status-drone">OFF</span>
   </div>
   <div class="feed-wrap">
@@ -652,6 +654,7 @@
       
     <button class="btn record" data-cam="drone">Record</button>
     <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+    
      </div>
 
     <!-- Professional Note -->
@@ -681,7 +684,7 @@
 
           <!-- Hidden Cam -->
           <div class="cam-card" data-cam="hidden">
-            <div class="card-header"><strong>Real-time suspicious movement detected by our proposed model anolomy detected video</strong><span class="badge" id="status-hidden">OFF</span></div>
+            <div class="card-header"><strong>Real-time suspicious movement detected by our proposed model anomaly detected video</strong><span class="badge" id="status-hidden">OFF</span></div>
             <div class="feed-wrap">
              <video 
   class="cam-video" 
@@ -715,11 +718,11 @@
       
     <button class="btn record" data-cam="drone">Record</button>
     <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
-     </div>
-     
-
-    <!-- Professional Note -->
-   <div class="meta" id="meta" style="
+  </div>
+  
+  
+  <!-- Professional Note -->
+  <div class="meta" id="meta" style="
     margin-top:10px; 
     font-size:14px; 
     color:#fbfcfc; 
@@ -729,18 +732,20 @@
     border-radius: 4px;
     max-width: 100%;
     line-height: 1.4;
-">
+    ">
   <em>
-  <em>Note: Due to paid hosting, this model cannot be hosted online, but you can run it locally on your system. <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="color:#007bff; font-weight:600;">Open Model</a></em>
-
+    <em>Note: Due to paid hosting, this model cannot be hosted online, but you can run it locally on your system. <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="color:#007bff; font-weight:600;">Open Model</a></em>
+    
   </em>
 </div>
-  </div>
-            <!--  -->
-          </div>
-        </section>
-        <div id="space" style="height: 25px;">
-<!-- tarun gajjalwar -->
+<button class="btn screen-exception" data-cam="drone" style="background-color:#007BFF">feedback</button>
+
+</div>
+<!--  -->
+</div>
+</section>
+<div id="space" style="height: 25px;">
+  <!-- tarun gajjalwar -->
         </div>
 
         <!-- Multi camera grid -->
@@ -758,22 +763,22 @@
               <button class="btn stop" data-cam="cctv">Stop</button>
               <button class="btn record" data-cam="cctv">Record</button>
               <button class="btn snap" data-cam="cctv">Snapshot</button> <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
-
+              
              
               <div class="tamper-ind" id="tamper-cctv">OK</div>
                <input type="file"  class="" data-cam="cctv">
                <div class="meta"><span id="meta-cctv">—</span></div>
+              </div>
             </div>
-          </div>
 
 <div class="cam-card" data-cam="drone">
   <div class="card-header">
-    <strong> Orignal video (input) </strong>
+    <strong>Real-time suspicious movement detected by our proposed model orignal video</strong>
     <span class="badge" id="status-drone">OFF</span>
   </div>
   <div class="feed-wrap">
     <video id="drone-video" class="cam-video" data-cam="drone" autoplay playsinline muted>
-      <source src="./video/normal2.mp4">
+      <source src="./video/normal2.mp4  ">
     </video>
     <canvas class="overlay" data-cam="drone"></canvas>
   </div>
@@ -782,7 +787,7 @@
      <div id="caam">
           <button class="btn play-source" data-cam="drone">Play Source</button>
     <button class="btn play-detection" data-cam="drone">Play Detection</button>
-     </div>
+  </div>
      <div id="caam">
       
     <button class="btn record" data-cam="drone">Record</button>
@@ -800,7 +805,7 @@
     border-radius: 4px;
     max-width: 100%;
     line-height: 1.4;
-">
+    ">
   <em>
     Note: This link directs to our proposed model, which you can easily integrate into your system. 
     <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="
@@ -808,18 +813,18 @@
         font-weight: bold; 
         font-size: 15px; 
         text-decoration: underline;
-    ">View Model</a>
+        ">View Model</a>
   </em>
 </div>
-  </div>
+</div>
 </div>
 
           <!-- Hidden Cam -->
           <div class="cam-card" data-cam="hidden">
-            <div class="card-header"><strong>Real-time suspicious movement detected by our proposed model anolomy detected video</strong><span class="badge" id="status-hidden">OFF</span></div>
+            <div class="card-header"><strong>Real-time suspicious movement detected by our proposed model anomaly detected video</strong><span class="badge" id="status-hidden">OFF</span></div>
             <div class="feed-wrap">
              <video 
-  class="cam-video" 
+             class="cam-video" 
   data-cam="drone" 
   autoplay 
   playsinline 
@@ -841,20 +846,20 @@
 
             <!--  -->
             <div class="cam-controls" id="cam-controls" style="height: 233px;">
-    <!-- 4 main buttons -->
-     <div id="caam">
+              <!-- 4 main buttons -->
+              <div id="caam">
           <button class="btn play-source" data-cam="drone">Play Source</button>
     <button class="btn play-detection" data-cam="drone">Play Detection</button>
      </div>
      <div id="caam">
-      
-    <button class="btn record" data-cam="drone">Record</button>
-    <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
-     </div>
+       
+       <button class="btn record" data-cam="drone">Record</button>
+       <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+      </div>
      
-
-    <!-- Professional Note -->
-   <div class="meta" id="meta" style="
+      
+      <!-- Professional Note -->
+      <div class="meta" id="meta" style="
     margin-top:10px; 
     font-size:14px; 
     color:#fbfcfc; 
@@ -864,24 +869,26 @@
     border-radius: 4px;
     max-width: 100%;
     line-height: 1.4;
-">
+    ">
   <em>
   <em>Note: Due to paid hosting, this model cannot be hosted online, but you can run it locally on your system. <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="color:#007bff; font-weight:600;">Open Model</a></em>
-
+  
   </em>
 </div>
-  </div>
+<button class="btn screen-exception" data-cam="drone" style="background-color:#007BFF">feedback</button>
+
+</div>
             <!--  -->
           </div>
         </section>
 
-
+        
         <!--  -->
-       <section id="side-panels">
-  <div class="panel alerts-panel">
-    <div class="panel-title">Alerts</div>
+        <section id="side-panels">
+          <div class="panel alerts-panel">
+            <div class="panel-title">Alerts</div>
     <ul id="alertsList" class="alerts-list"></ul>
-
+    
     <!-- Siren audio, hidden by default -->
     <audio id="alertSound" src="./audio/siren.mp3" preload="auto"></audio>
   </div>
@@ -897,7 +904,7 @@
   </div>
 </section>
 
-        <footer class="footer">
+<footer class="footer">
           <small>© NSG Tactical — Client-side demo. For production use, integrate secure streams & stronger models.</small>
         </footer>
       </main>
@@ -917,7 +924,7 @@
 
 
   <audio id="alertSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
-
+  
   <!-- TensorFlow.js & COCO-SSD -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
