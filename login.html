@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NSG Command Portal — Login</title>
+  <link rel="shortcut icon" href="./image/logo.jpg" type="image/x-icon">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --panel-bg:#f7f8fa;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --navy:#002663;
+      --accent:#0b5ed7;
+      --border:#d1d5db;
+      --shadow:0 10px 25px rgba(16,24,40,0.1);
+      --radius:12px;
+      font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    }
+
+    html, body { height:100%; margin:0; color:var(--text);
+      background:radial-gradient(circle at 10% 20%, rgba(2,6,23,0.06), transparent 10%),
+                 linear-gradient(180deg,#eef2f6 0%, #e9edf2 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .form-row select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  transition: 0.3s;
+}
+
+.form-row select:focus {
+  border-color: #d32f2f;
+  background-color: #fff;
+  outline: none;
+}
+
+
+    .gheader { position:fixed; top:0; left:0; right:0; height:72px; padding:12px 24px; display:flex; align-items:center; gap:16px; background:linear-gradient(90deg,#001f4d,#00307a); color:#fff; box-shadow:0 4px 18px rgba(0,16,56,0.25); z-index:50; }
+    .gheader .emblem { width:56px; height:56px; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.06); }
+    .gheader .emblem img { width:46px; height:46px; object-fit:contain; }
+    .gheader .titles { display:flex; flex-direction:column; line-height:1.1; }
+    .gheader .main-title{ font-family:"Orbitron",sans-serif; font-size:1.15rem; font-weight:600; }
+    .gheader .tag{ font-size:0.78rem; opacity:0.85; }
+
+    .page{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:110px 20px 40px; }
+
+    .card{ width:540px; background:var(--panel-bg); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; border:1px solid var(--border); transition:transform 0.3s ease, box-shadow 0.3s ease; }
+    .card:hover{ transform: translateY(-3px); box-shadow:0 12px 30px rgba(16,24,40,0.15); }
+
+    .card .head{ display:flex; gap:10px; align-items:center; padding:14px 18px; border-bottom:1px solid rgba(0,0,0,0.06); }
+    .card .head .titles .title{ font-size:1.1rem; font-weight:600; }
+    .card .head .titles .subtitle{ font-size:0.78rem; color:var(--muted); }
+    .card .head .emblem-mini{ width:42px; height:42px; }
+    .card .head .emblem-mini img{ width:100%; height:100%; object-fit:contain; }
+
+    .card-body{ padding:24px 26px; }
+    .intro{ margin-bottom:14px; color:var(--muted); font-size:0.9rem; }
+
+    .form-row{ margin-bottom:14px; }
+    label{ display:block; font-size:0.8rem; color:#374151; margin-bottom:6px; font-weight:500; }
+
+    input[type="text"], input[type="password"], .captcha-input{
+      width:70%; padding:12px 14px; border-radius:8px; border:1px solid #c7cbd0; background:#fff;
+      font-size:0.95rem; color:var(--text); outline:none; transition:box-shadow .18s, border-color .18s;
+    }
+    input::placeholder{ color:#9aa1a8; }
+    input:focus{ border-color: var(--navy); box-shadow: 0 4px 15px rgba(2,40,115,0.12); }
+
+    .pw-row{ display:flex; gap:8px; align-items:center; }
+    .pw-row .pw-field{ flex:1; }
+    .toggle-pw{ background:transparent; border:1px solid var(--border); padding:9px 12px; border-radius:8px; cursor:pointer; color:var(--muted); font-size:0.85rem; font-weight:500; transition:all 0.2s ease; }
+    .toggle-pw:hover{ background:#f1f3f5; }
+
+    .options{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; font-size:0.88rem; }
+    .options .left{ display:flex; align-items:center; gap:8px; color:var(--muted); }
+    .checkbox{ width:16px; height:16px; accent-color:var(--navy); }
+
+    .captcha-row{ display:flex; gap:12px; align-items:center; }
+    .captcha-canvas{ border-radius:8px; border:1px solid #c7cbd0; width:160px; height:50px; background:#fff; }
+    .captcha-controls{ display:flex; flex-direction:column; gap:6px; flex:1; }
+    .btn-small{ padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; font-size:0.85rem; color:var(--text); font-weight:500; transition:all 0.2s ease; }
+    .btn-small:hover{ background:#f1f3f5; }
+
+    .login-btn{ width:100%; padding:14px; margin-top:12px; background:linear-gradient(90deg,var(--navy),var(--accent)); color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:700; font-size:1rem; box-shadow:0 6px 20px rgba(2,40,115,0.12); transition:0.25s; }
+    .login-btn:hover{ box-shadow:0 8px 24px rgba(2,40,115,0.18); }
+
+    .note{ margin-top:14px; font-size:0.82rem; color:var(--muted); text-align:center; }
+    .error{ margin-top:10px; background:#fff1f0; color:#7f1d1d; padding:10px 12px; border-radius:8px; font-size:0.9rem; display:none; }
+
+    .footer{ text-align:center; padding:12px 0 16px; font-size:0.78rem; color:var(--muted); }
+    @media (max-width:420px){ .card{ width:95%; } .captcha-canvas{ width:130px; height:45px; } .gheader{ padding:10px 12px; height:64px; gap:10px; } .gheader .main-title{ font-size:1rem; } }
+
+
+    .left{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+
+    }
+
+    .main-title{
+      margin-bottom: 5px;
+    }
+
+
+    footer{
+      text-align: center;
+      height: 20px;
+      width: 100%;
+      background-color: #002661;
+      padding: 25px;
+      color: rgb(213, 211, 211);
+    }
+  </style>
+</head>
+<body>
+  <header class="gheader">
+    <div class="left">
+      <div class="emblem"><img src="./image/logo1.png" alt="NSG emblem" onerror="this.style.display='none'"></div>
+      <div class="titles">
+        <div class="main-title">NSG — National Security Group</div>
+        <div class="tag">Command Portal • Secure Access</div>
+      </div>
+    </div>
+  </header>
+<div id="trialPopup" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:1100;">
+  <div style="width:360px;max-width:92%;background:#fff;border-radius:12px;padding:18px;box-shadow:0 12px 40px rgba(2,6,23,0.45);">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+      <img src="./image/logo1.png" alt="NSG" style="width:44px;height:44px;object-fit:contain;border-radius:6px;">
+      <div>
+        <div style="font-family:'Orbitron',sans-serif;color:#002663;font-weight:700;font-size:18px;">Trial Login</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px;">Use demo Credentials and just choose administrator option and write proper chapcha. </div>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc;border-radius:8px;padding:10px;margin-bottom:12px;border:1px solid #e6eef8;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:13px;color:#374151;font-weight:600;">Username</div>
+        <button id="copyUserBtn" class="copy-btn" style="background:transparent;border:none;color:#0b5ed7;cursor:pointer;font-weight:600">Copy</button>
+      </div>
+      <div style="font-size:14px;color:#0f172a;word-break:break-all;padding:6px;background:#fff;border-radius:6px;border:1px solid #e6eef8;">
+        <span id="trialUserText" style="user-select:text;">India</span>
+      </div>
+
+      <div style="height:8px"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:13px;color:#374151;font-weight:600;">Password</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="toggleTrialPw" style="background:transparent;border:none;color:#0b5ed7;cursor:pointer;font-weight:600">Show</button>
+          <button id="copyPassBtn" class="copy-btn" style="background:transparent;border:none;color:#0b5ed7;cursor:pointer;font-weight:600">Copy</button>
+        </div>
+      </div>
+
+      <div style="font-size:14px;color:#0f172a;padding:6px;background:#fff;border-radius:6px;border:1px solid #e6eef8;display:flex;align-items:center;gap:8px;">
+        <input id="trialPassField" type="password" value="India@123" style="border:none;background:transparent;outline:none;width:100%;font-size:14px;color:#0f172a;" />
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button id="useCredBtn" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(90deg,#002663,#0b5ed7);color:#fff;font-weight:700;cursor:pointer;">
+        Use Credentials.
+      </button>
+      <button id="trialCloseBtn" style="padding:10px;border-radius:8px;border:1px solid #d1d5db;background:#fff;color:#374151;cursor:pointer;">
+        Close
+      </button>
+    </div>
+
+    <div style="font-size:12px;color:#6b7280;margin-top:10px;text-align:center;">
+      Demo only — no server auth performed. For real deployments use secure server-side auth.
+    </div>
+  </div>
+</div>
+  <main class=
+  "page">
+    <div class="card">
+      <div class="head">
+        <div class="emblem-mini"><img src="./image/logo1.png" alt="NSG mini" onerror="this.style.display='none'"></div>
+        <div class="titles">
+          <div class="title">NSG Command Portal</div>
+          <div class="subtitle">AI/ML Video Analysis — Secure Access</div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="intro">Sign in to access the NSG dashboard. (Authorized users only)</div>
+
+        <form id="loginForm" autocomplete="off" novalidate>
+          <div class="form-row">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" placeholder="Enter username" required>
+          </div>
+
+          <div class="form-row pw-row">
+            <div class="pw-field">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="Enter password" required>
+            </div>
+            <button type="button" class="toggle-pw" id="togglePw">Show</button>
+          </div>
+
+          <div class="form-row">
+            <label for="role">Select Role</label>
+            <select id="role" name="role" required>
+              <option value="" disabled selected>Choose your role</option>
+              <option value="analyst">Analyst</option>
+              <option value="administrator">Administrator</option>
+            </select>
+          </div>
+
+          <div class="form-row options">
+            <div class="left">
+              <input id="remember" type="checkbox" class="checkbox">
+              <label for="remember">Remember me</label>
+            </div>
+            <div><a href="#">Forgot?</a></div>
+          </div>
+
+          <div class="form-row">
+            <label for="captchaInput">Security check</label>
+            <div class="captcha-row">
+              <canvas id="captchaCanvas" width="160" height="50"></canvas>
+              <div class="captcha-controls">
+                <input id="captchaInput" placeholder="Enter text shown" required>
+                <div style="display:flex;gap:8px;margin-top:6px;">
+                  <button type="button" id="refreshCaptcha">Refresh</button>
+                  <button type="button" id="audioCaptcha">Play</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="error" id="formError"></div>
+
+          <button class="login-btn" id="loginBtn" type="submit">LOGIN</button>
+        </form>
+
+        <div class="note">
+          Don't have an account? <a href="signup.html">Signup</a>
+        </div>
+
+        <div class="note">This is a client-side demo. Real deployments require server validation & secure auth.</div>
+      </div>
+
+      <div class="footer">© NSG Tactical — Client Demo</div>
+    </div>
+  </main>
+
+      <footer>
+    @NSG — National Security Group
+  </footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyC-AeYBGhlyVygsqL-HaTXSbaSNGYEHQIM",
+  authDomain: "nsg-project-48222.firebaseapp.com",
+  projectId: "nsg-project-48222",
+  storageBucket: "nsg-project-48222.firebasestorage.app",
+  messagingSenderId: "399968151203",
+  appId: "1:399968151203:web:5803a398a85bafc6544116",
+  measurementId: "G-SZ1GW9FYDL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Captcha logic
+const captchaCanvas = document.getElementById('captchaCanvas');
+const captchaInput = document.getElementById('captchaInput');
+const refreshBtn = document.getElementById('refreshCaptcha');
+const audioBtn = document.getElementById('audioCaptcha');
+const ctx = captchaCanvas.getContext('2d');
+let currentCaptcha = '';
+
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function randChar(){ const chars='ABCDEFGHJKMNPQRSTWXYZ23456789'; return chars.charAt(Math.floor(Math.random()*chars.length)); }
+
+function drawCaptcha(text){
+  ctx.clearRect(0,0,captchaCanvas.width,captchaCanvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,captchaCanvas.width,captchaCanvas.height);
+  const step = captchaCanvas.width/(text.length+1);
+  for(let i=0;i<text.length;i++){
+    const ch=text[i]; const fontSize=randInt(18,22);
+    ctx.save();
+    const x = step*(i+1); const y = captchaCanvas.height/2 + randInt(2,6);
+    ctx.translate(x,y); ctx.rotate((Math.random()-0.5)*0.22);
+    ctx.font = `${fontSize}px "Orbitron", sans-serif`;
+    ctx.fillStyle = ['#002663','#0b5ed7','#0b7fff'][randInt(0,2)];
+    ctx.fillText(ch,-fontSize/2,0);
+    ctx.restore();
+  }
+}
+
+function newCaptcha(len=5){
+  let s=''; for(let i=0;i<len;i++) s+=randChar();
+  currentCaptcha=s; drawCaptcha(s);
+}
+
+refreshBtn.addEventListener('click',()=>newCaptcha());
+audioBtn.addEventListener('click',()=>{
+  const utter=new SpeechSynthesisUtterance(currentCaptcha.split('').join(' '));
+  utter.lang='en-US';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
+});
+newCaptcha();
+
+// Toggle password
+const pw=document.getElementById('password');
+const togglePw=document.getElementById('togglePw');
+togglePw.addEventListener('click',()=>{
+  if(pw.type==='password'){ pw.type='text'; togglePw.textContent='Hide'; }
+  else{ pw.type='password'; togglePw.textContent='Show'; }
+});
+
+const form=document.getElementById('loginForm');
+const errorBox=document.getElementById('formError');
+function showError(msg){ errorBox.textContent=msg; errorBox.style.display='block'; }
+
+form.addEventListener('submit', async(ev)=>{
+  ev.preventDefault(); errorBox.style.display='none';
+  const username=document.getElementById('username').value.trim();
+  const password=document.getElementById('password').value;
+  const role=document.getElementById('role').value;
+  const captcha=captchaInput.value.trim();
+
+  if(!username||!password){ showError('Please fill all fields.'); return; }
+  if(!captcha){ showError('Please enter captcha.'); return; }
+  if(captcha.toUpperCase()!==currentCaptcha.toUpperCase()){ 
+    showError('Captcha did not match'); newCaptcha(); captchaInput.value=''; return; 
+  }
+
+  try{
+    const usersRef = collection(db,'users');
+    const q = query(usersRef, where('username','==',username));
+    const snapshot = await getDocs(q);
+
+    if(snapshot.empty){ showError('Invalid username or password.'); return; }
+
+    let valid=false;
+    snapshot.forEach(doc=>{ if(doc.data().password===password) valid=true; });
+
+    if(valid){
+      localStorage.setItem('userRole', role); // store role in local storage
+      alert('Login successful!');
+      window.location.href='saiorignal.html';
+    } else showError('Invalid username or password.');
+  } catch(err){
+    console.error(err);
+    showError('Error connecting to database.');
+  }
+});
+  (function(){
+    const trialPopup = document.getElementById('trialPopup');
+    const copyUserBtn = document.getElementById('copyUserBtn');
+    const copyPassBtn = document.getElementById('copyPassBtn');
+    const toggleTrialPw = document.getElementById('toggleTrialPw');
+    const trialPassField = document.getElementById('trialPassField');
+    const trialUserText = document.getElementById('trialUserText');
+    const useCredBtn = document.getElementById('useCredBtn');
+    const trialCloseBtn = document.getElementById('trialCloseBtn');
+
+    // default credentials (change here if needed)
+    const demoUser = 'India';
+    const demoPass = 'India@123';
+
+    // fill display (already set in HTML above, but reinforce)
+    trialUserText.textContent = demoUser;
+    trialPassField.value = demoPass;
+
+    // copy helpers
+    async function copyToClipboard(text, btn) {
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied';
+        setTimeout(()=> btn.textContent = 'Copy', 1200);
+      } catch(e) {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); btn.textContent='Copied'; setTimeout(()=>btn.textContent='Copy',1200);} catch(e2){ alert('Copy failed — select and copy manually.'); }
+        ta.remove();
+      }
+    }
+
+    copyUserBtn.addEventListener('click', ()=> copyToClipboard(demoUser, copyUserBtn));
+    copyPassBtn.addEventListener('click', ()=> copyToClipboard(demoPass, copyPassBtn));
+
+    // toggle password visibility in modal
+    toggleTrialPw.addEventListener('click', ()=>{
+      if(trialPassField.type === 'password'){ trialPassField.type = 'text'; toggleTrialPw.textContent = 'Hide'; }
+      else{ trialPassField.type = 'password'; toggleTrialPw.textContent = 'Show'; }
+    });
+
+    // use credentials -> autofill main form fields and close modal
+    useCredBtn.addEventListener('click', ()=>{
+      const mainUser = document.getElementById('username');
+      const mainPass = document.getElementById('password');
+      if(mainUser) mainUser.value = demoUser;
+      if(mainPass) { mainPass.value = demoPass; /* also show field briefly if hidden */ }
+      trialPopup.style.display = 'none';
+
+      // Optionally focus password or submit automatically - commented out
+      // if(mainPass) mainPass.focus();
+      // document.getElementById('loginForm').dispatchEvent(new Event('submit', {cancelable:true}));
+    });
+
+    // close
+    trialCloseBtn.addEventListener('click', ()=> { trialPopup.style.display='none'; });
+
+    // Show popup on page load (already visible by default). If you prefer hidden-first:
+    // trialPopup.style.display = 'flex'; // ensures shown
+  })();
+</script>
+</body>
+</html>

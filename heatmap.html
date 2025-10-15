@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NSG Supervisor — Tactical Heatmap</title>
+  <link rel="shortcut icon" href="./image/National_security_guard_logo.png" type="image/x-icon">
+
+
+<!-- Inter Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<!-- JS for PDF Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root {
+  --bg-dark: #1a1a1a;
+  --panel-dark: #2c2c2c;
+  --accent: #ff9900;
+  --danger: #e53935;
+  --success: #4caf50;
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  gap: 16px;
+  background-color: rgba(0,0,0,0.3);
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  z-index: 1200;
+  backdrop-filter: blur(5px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.brand h1 {
+  font-size: 1.1rem;
+  margin: 0;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.brand .sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+.header .controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  background: var(--panel-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--accent);
+    color: #111;
+    border-color: var(--accent);
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #111;
+  border: none;
+  box-shadow: 0 4px 15px rgba(255, 153, 0, 0.2);
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: white;
+  border: none;
+}
+.btn.danger:hover {
+    background: #ff5252;
+}
+
+/* ===== DASHBOARD PANEL ===== */
+.dashboard {
+  display: flex;
+  gap: 12px;
+  padding: 10px 20px;
+  align-items: center;
+  background-color: rgba(0,0,0,0.2);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 1100;
+  flex-wrap: wrap;
+}
+
+.kpi {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(44, 44, 44, 0.5);
+  min-width: 160px;
+  border: 1px solid var(--border-color);
+}
+.kpi .num {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.kpi .lbl {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.right-controls {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.sync-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sync-status .led {
+    width: 10px;
+    height: 10px;
+    background-color: var(--success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+
+/* ===== MAP + OVERLAY ===== */
+#mapWrap {
+  position: relative;
+  height: calc(100vh - 125px);
+}
+#map {
+  width: 100%;
+  height: 100%;
+  background-color: #1a1a1a;
+}
+.leaflet-control-zoom-in, .leaflet-control-zoom-out {
+    background-color: var(--panel-dark) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+.leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
+    background-color: #383838 !important;
+}
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: var(--panel-dark) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4) !important;
+    border-radius: 6px !important;
+}
+.leaflet-popup-content {
+    margin: 12px !important;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+#overlayCanvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 900;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.infoBox {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1100;
+  background: rgba(26, 26, 26, 0.8);
+  padding: 10px 15px;
+  border-radius: 6px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+/* --- THREAT ANALYSIS PANEL --- */
+.analysis-panel {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 320px;
+    max-height: calc(100% - 30px);
+    background: rgba(26, 26, 26, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    z-index: 1100;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+}
+.analysis-panel.collapsed {
+    transform: translateX(calc(100% - 50px));
+}
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+}
+.panel-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.panel-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.panel-body {
+    padding: 5px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+.anomaly-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.anomaly-item {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.anomaly-item:last-child {
+    border-bottom: none;
+}
+.anomaly-details {
+    flex-grow: 1;
+}
+.anomaly-details .location {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.anomaly-details .threat {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+.track-btn {
+    background: var(--panel-dark);
+    border: 1px solid var(--border-color);
+    color: var(--accent);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s ease;
+}
+.track-btn:hover {
+    background: var(--accent);
+    color: #111;
+}
+
+/* Pulsing icon for tracked anomaly */
+@keyframes pulse-red {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(255, 82, 82, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+}
+.pulsing-marker {
+    background-color: #ff5252;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid white;
+    box-shadow: 0 0 0 rgba(229, 57, 53, 0.7);
+    animation: pulse-red 2s infinite;
+}
+
+</style>
+</head>
+<body>
+
+  <header class="header" role="banner">
+    <div class="brand">
+      <img src="./image/logo.jpg" alt="Indian Emblem">
+      <div>
+        <h1>NSG TACTICAL A.I.</h1>
+        <div class="sub">Threat Analysis Dashboard</div>
+      </div>
+    </div>
+
+   <div class="controls">
+    <button class="btn" id="generateReportBtn"><i class="fa-solid fa-file-arrow-down"></i> Download PDF Report</button>
+    <button class="btn primary" id="centerBtn"><i class="fa-solid fa-location-crosshairs"></i> Center View</button>
+    <button class="btn danger" id="toggleAnalysisBtn"><i class="fa-solid fa-shield-halved"></i> Toggle Analysis</button>
+   </div>
+  </header>
+
+  <div class="dashboard" role="region" aria-label="Live dashboard">
+    <div class="kpi"><div><div class="num" id="kpi-lat">20.5937</div><div class="lbl">Center LAT</div></div></div>
+    <div class="kpi"><div><div class="num" id="kpi-lon">78.9629</div><div class="lbl">Center LON</div></div></div>
+    <div class="kpi"><div><div class="num" id="kpi-zones">5</div><div class="lbl">Active Zones</div></div></div>
+    <div class="kpi"><div><div class="num" id="kpi-status" style="color:var(--success)">Nominal</div><div class="lbl">System Status</div></div></div>
+    <div class="right-controls">
+        <div class="sync-status">
+            <div class="led"></div>
+            <span>Last Synced: <b id="sync-time">--</b></span>
+        </div>
+    </div>
+  </div>
+
+  <div id="mapWrap">
+    <div id="map"></div>
+    <canvas id="overlayCanvas"></canvas>
+    <div class="infoBox" id="infoBox">Heatmap data loaded. System is operational.</div>
+    
+    <div class="analysis-panel collapsed" id="analysisPanel">
+        <div class="panel-header" id="panelHeader">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Threat Analysis</h3>
+            <button class="panel-toggle-btn" id="panelToggleBtn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="panel-body">
+            <ul class="anomaly-list" id="anomalyList"></ul>
+        </div>
+    </div>
+
+  </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const { jsPDF } = window.jspdf;
+
+    const indiaBounds = [
+      [6.5546, 68.1114],   // Southwest
+      [37.0902, 97.3956]    // Northeast
+    ];
+    const map = L.map('map', {
+      zoomControl: true,
+      minZoom: 5,
+      maxZoom: 18,
+      maxBounds: indiaBounds,
+      maxBoundsViscosity: 1.0,
+    }).setView([22.9734, 78.6569], 5);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        minZoom: 5,
+        maxZoom: 18
+    }).addTo(map);
+
+    // --- ANOMALY DATA WITH ENHANCED DETAILS (CAMERA-DETECTABLE ONLY) ---
+    const anomalyData = [
+        { lat: 34.08, lng: 74.79, intensity: 1.0, location: 'Srinagar, J&K', threat: 'Suspected Infiltration', details: '<b>VISUAL CONFIRMATION:</b><br>Thermal imaging from a UAV has detected multiple heat signatures moving across the Line of Control. Recommend immediate deployment of a Quick Reaction Team.' },
+        { lat: 31.63, lng: 74.87, intensity: 0.7, location: 'Amritsar, Punjab', threat: 'Cross-Border Movement', details: '<b>VISUAL CONFIRMATION:</b><br>Night-vision cameras show persistent movement across a fortified border section. Activity is consistent with smuggling operations. Ground patrol has been alerted.' },
+        { lat: 18.76, lng: 81.74, intensity: 0.85, location: 'Dantewada, Chhattisgarh', threat: 'Unauthorized Drone Sighting', details: '<b>VISUAL CONFIRMATION:</b><br>A high-speed, unauthorized drone was sighted via long-range camera over a restricted CRPF camp. The drone evaded countermeasures. This is likely hostile reconnaissance.' },
+        { lat: 28.70, lng: 77.10, intensity: 0.6, location: 'North Delhi', threat: 'Suspicious Vehicle', details: '<b>VISUAL CONFIRMATION:</b><br>CCTV footage flagged a vehicle loitering near critical infrastructure. The license plate does not match records. The vehicle is being tracked by traffic cameras.' },
+        { lat: 25.31, lng: 82.97, intensity: 0.75, location: 'Varanasi, UP', threat: 'Unusual Crowd Formation', details: '<b>VISUAL CONFIRMATION:</b><br>Drone surveillance shows an unusual and rapid crowd formation in a sensitive area, inconsistent with normal patterns. Monitoring for potential public order disturbances.' },
+        { lat: 19.07, lng: 72.87, intensity: 0.8, location: 'Mumbai Port Area', threat: 'Suspicious Container Movement', details: '<b>VISUAL CONFIRMATION:</b><br>Port authority cameras captured an unscheduled container being moved under darkness. Thermal cameras indicate a possible heat source inside. Tracking the container is a high priority.' },
+        { lat: 30.31, lng: 76.38, intensity: 0.7, location: 'Patiala, Punjab', threat: 'Rooftop Activity', details: '<b>VISUAL CONFIRMATION:</b><br>Satellite imagery and a high-zoom patrol camera have identified suspicious activity on rooftops along a VIP route. Possible sniper positions are being assessed.' },
+        { lat: 26.91, lng: 75.78, intensity: 0.65, location: 'Jaipur, Rajasthan', threat: 'Anomalous Vehicle Convoy', details: '<b>VISUAL CONFIRMATION:</b><br>Highway patrol cameras have detected a convoy of unmarked vehicles moving at high speed. The convoy is avoiding standard checkpoints. Air surveillance has been requested.' },
+        { lat: 33.73, lng: 75.07, intensity: 0.9, location: 'Anantnag, J&K', threat: 'Guerilla Movement', details: '<b>VISUAL CONFIRMATION:</b><br>A long-range reconnaissance drone captured footage of a small, armed group moving through dense forest. Their path indicates a potential ambush site. Alerting nearby army units.' }
+    ];
+
+    const heatPoints = anomalyData.map(p => [p.lat, p.lng, p.intensity]);
+    
+    // FIX for IndexSizeError: Wait for the map to be fully initialized and sized
+    // before adding the heat layer. This prevents a race condition where the
+    // layer tries to draw on a canvas of size 0x0.
+    map.whenReady(() => {
+        L.heatLayer(heatPoints, { 
+            radius: 65,      // Increased for better long-view visibility
+            blur: 55,        // Increased for a softer, larger glow
+            maxZoom: 10,     // Adjust when the heatmap is visible
+            max: 1.0, 
+            gradient: {      // A much brighter, more visible color scheme for dark maps
+                0.4: '#00ffff', // Cyan
+                0.6: '#ffff00', // Yellow
+                0.8: '#ff8c00', // Dark Orange
+                1.0: '#ff4500'  // OrangeRed
+            } 
+        }).addTo(map);
+    });
+
+    // --- INTERACTIVE ANOMALIES ---
+    const anomalyList = document.getElementById('anomalyList');
+    let activeTrackerMarker = null;
+
+    anomalyData.forEach(anomaly => {
+        const listItem = document.createElement('li');
+        listItem.className = 'anomaly-item';
+        listItem.innerHTML = `
+            <div class="anomaly-details">
+                <div class="location">${anomaly.location}</div>
+                <div class="threat">${anomaly.threat}</div>
+            </div>
+            <button class="track-btn" title="Track this anomaly"><i class="fa-solid fa-crosshairs"></i></button>
+        `;
+        listItem.querySelector('.track-btn').addEventListener('click', () => {
+            map.setView([anomaly.lat, anomaly.lng], 13, { animate: true });
+            if (activeTrackerMarker) map.removeLayer(activeTrackerMarker);
+            activeTrackerMarker = L.marker([anomaly.lat, anomaly.lng], {
+                icon: L.divIcon({ className: 'pulsing-marker', iconSize: [20, 20] })
+            }).addTo(map);
+        });
+        anomalyList.appendChild(listItem);
+
+        const hoverMarker = L.circleMarker([anomaly.lat, anomaly.lng], { radius: 25, fillOpacity: 0, stroke: false }).addTo(map);
+        hoverMarker.bindPopup(anomaly.details);
+        hoverMarker.on('mouseover', function(e) { this.openPopup(); });
+        hoverMarker.on('mouseout', function(e) { this.closePopup(); });
+    });
+
+    // --- RADAR SWEEP ANIMATION ---
+    const overlay = document.getElementById('overlayCanvas');
+    const ctx = overlay.getContext('2d');
+    let radarAngle = 0;
+    function resizeCanvas() { overlay.width = mapWrap.clientWidth; overlay.height = mapWrap.clientHeight; }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    function drawRadar() {
+        const centerPoint = map.latLngToContainerPoint([22.9734, 78.6569]);
+        const radius = Math.min(overlay.width, overlay.height);
+        ctx.clearRect(0, 0, overlay.width, overlay.height);
+        const gradient = ctx.createRadialGradient(centerPoint.x, centerPoint.y, 0, centerPoint.x, centerPoint.y, radius);
+        gradient.addColorStop(0, 'rgba(0, 255, 120, 0.2)');
+        gradient.addColorStop(1, 'rgba(0, 255, 120, 0)');
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(centerPoint.x, centerPoint.y);
+        ctx.arc(centerPoint.x, centerPoint.y, radius, radarAngle, radarAngle + Math.PI / 3);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.restore();
+        radarAngle = (radarAngle + 0.02) % (Math.PI * 2);
+        requestAnimationFrame(drawRadar);
+    }
+    drawRadar();
+
+    // --- UI Logic ---
+    const syncTimeEl = document.getElementById('sync-time');
+    function updateSyncTime() { syncTimeEl.textContent = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit'}); }
+    setInterval(updateSyncTime, 1000);
+    updateSyncTime();
+    
+    document.getElementById('centerBtn').addEventListener('click', () => map.setView([22.9734, 78.6569], 5, { animate: true }));
+
+    const analysisPanel = document.getElementById('analysisPanel');
+    const panelToggleBtn = document.getElementById('panelToggleBtn');
+    const togglePanel = () => {
+        analysisPanel.classList.toggle('collapsed');
+        const icon = panelToggleBtn.querySelector('i');
+        icon.className = analysisPanel.classList.contains('collapsed') ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left';
+    };
+    
+    document.getElementById('toggleAnalysisBtn').addEventListener('click', togglePanel);
+    document.getElementById('panelHeader').addEventListener('click', togglePanel);
+
+    document.getElementById('generateReportBtn').addEventListener('click', () => {
+        const infoBox = document.getElementById('infoBox');
+        infoBox.textContent = 'Generating PDF report... Please wait.';
+        infoBox.style.background = 'var(--accent)';
+        infoBox.style.color = '#111';
+        
+        document.querySelectorAll('.btn, .analysis-panel, .leaflet-control-container').forEach(el => el.style.visibility = 'hidden');
+
+        setTimeout(() => { // Give map time to redraw if needed
+            html2canvas(document.querySelector("#mapWrap"), { useCORS: true, backgroundColor: '#1a1a1a' })
+            .then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
+
+                pdf.setFontSize(20);
+                pdf.setTextColor('#ff9900');
+                pdf.text('NSG THREAT ANALYSIS REPORT', 20, 30);
+                
+                pdf.setFontSize(10);
+                pdf.setTextColor('#a0a0a0');
+                pdf.text(`Generated: ${new Date().toLocaleString('en-IN')}`, 20, 45);
+
+                pdf.addImage(imgData, 'PNG', 0, 60, canvas.width, canvas.height - 60);
+                pdf.save(`NSG_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+                
+                document.querySelectorAll('.btn, .analysis-panel, .leaflet-control-container').forEach(el => el.style.visibility = 'visible');
+                infoBox.textContent = 'Report downloaded successfully.';
+                infoBox.style.background = 'var(--success)';
+                infoBox.style.color = 'white';
+
+                setTimeout(() => { // Reset infoBox style
+                    infoBox.textContent = 'System is operational.';
+                    infoBox.style.background = 'rgba(26, 26, 26, 0.8)';
+                    infoBox.style.color = 'var(--text-primary)';
+                }, 3000);
+            });
+        }, 500);
+    });
+});
+</script>
+</body>
+</html>
+

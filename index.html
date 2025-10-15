@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NSG Supervisor | AI Command & Anomaly Detection System</title>
+  <link rel="shortcut icon" href="./image/National_security_guard_logo.png" type="image/x-icon">
+
+  <!-- Google Font + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+
+
+  <style>
+  :root{
+    --bg:#fdfdfd; --panel:#ffffff; --muted:#555; --accent:#CC2832;
+    --white:#000000; --support-red:#e53935; --support-green:#F28300; --support-blue:#CC2832;
+    --glass: rgba(255,255,255,0.6); --card-border: rgba(0,0,0,0.08);
+    font-family: "Poppins", sans-serif;
+  }
+
+  html{scroll-behavior:smooth;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background: linear-gradient(180deg, var(--bg) 0%, #f9f9f9 100%);
+    color:var(--white); min-height:100vh; line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header {
+    position: sticky; top: 0; z-index: 99;
+    display: flex; align-items:center; justify-content:space-between;
+    padding:14px 28px; gap:12px;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+    backdrop-filter: blur(6px);
+    border-radius:0 0 12px 12px;
+    animation: headerFade 10s ease-in-out infinite alternate;
+    box-shadow:0 6px 20px rgba(0,0,0,0.05);
+  }
+  @keyframes headerFade{
+    0%{background-color:#f0f8ff;}
+    50%{background-color:#ffffff;}
+    100%{background-color:#f0f8ff;}
+  }
+
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo img{width:52px;height:52px;object-fit:contain;border-radius:12px;transition:transform 0.3s ease;}
+  .logo img:hover{transform:scale(1.05);}
+  .logo .fa-shield-cat{display:none;width:52px;height:52px;font-size:30px;padding:12px;border-radius:12px;background:var(--panel);color:var(--accent);}
+  .logo h1{font-size:20px;font-weight:700;letter-spacing:1px;color:#111;text-transform:uppercase;}
+
+  nav{display:flex;gap:18px;align-items:center;position:relative;}
+  nav a{color:#444;text-decoration:none;font-weight:600;font-size:14px;position:relative;padding:6px 4px;transition:color 0.3s ease;}
+  nav a:hover{color:var(--accent);}
+  nav a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:3px;background:var(--accent);border-radius:3px;transition:width 0.28s ease;}
+  nav a:hover::after{width:100%;}
+
+  nav .leaders{display:flex;gap:8px;margin-left:88px;align-items:center;}
+  nav .leaders .leader{display:flex;flex-direction:column;align-items:center;font-size:12px;color:#111;text-align:center;}
+  nav .leaders .leader img{width:80px;height:86px;border-radius:0%;object-fit:cover;cursor:default;}
+  nav .leaders .leader span{margin-top:4px;}
+
+  .controls{display:flex;gap:10px;align-items:center;}
+  .btn{background:transparent;color:#111;border:1px solid rgba(0,0,0,0.15);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+  .btn-danger{background:var(--support-red);color:#fff;border:1px solid rgba(229,57,53,0.3);box-shadow:0 6px 18px rgba(229,57,53,0.15);}
+  .btn-danger:hover{background:#f44336;transform:translateY(-2px);box-shadow:0 10px 25px rgba(244,67,54,0.3);}
+
+  .hero{text-align:center;padding:110px 22px 80px;background: linear-gradient(90deg, rgba(26,115,232,0.06) 0%, rgba(0,0,0,0) 100%);}
+  .hero h2{font-size:44px;letter-spacing:1px;margin-bottom:12px;color:#111;font-weight:900;transform:translateY(18px);opacity:0;animation:slideUp .9s .15s forwards;}
+  .hero p{max-width:900px;margin:0 auto 22px;color:#555;font-size:14px;transform:translateY(18px);opacity:0;animation:slideUp .9s .35s forwards;}
+  .hero .cta{display:inline-flex;gap:12px;align-items:center;margin-top:8px;transform:translateY(18px);opacity:0;animation:slideUp .9s .6s forwards;}
+  .hero .cta .btn{font-size:14px;padding:12px 18px;border-radius:12px;}
+  .hero .cta .btn-outline{background:transparent;border:1px solid var(--card-border);color:#111;}
+  @keyframes slideUp{to{transform:none;opacity:1}}
+  section {
+    padding: 70px 36px;
+  }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .section-title h2 {
+    color: var(--support-blue);
+    font-size: 14spx;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .section-title p {
+    color: #555;
+    font-size: 14px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cards {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    margin-top: 18px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--card-border);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    transition: transform .36s ease, box-shadow .36s ease;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .card .icon {
+    min-width: 58px;
+    min-height: 58px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 115, 232, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 24px;
+    color: var(--support-blue);
+  }
+
+  .card h3 {
+    color: #111;
+    font-size: 18px;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .card p {
+    color: #555;
+    font-size: 14px;
+    margin: 0;
+    text-align: center;
+  }
+
+  .stats-grid {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .stat {
+    padding: 20px 28px;
+    border-radius: 12px;
+    background: rgba(26, 115, 232, 0.05);
+    border: 1px solid var(--card-border);
+    text-align: center;
+    min-width: 140px;
+  }
+
+  .stat h3 {
+    font-size: 28px;
+    color: var(--support-green);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .stat p {
+    color: var(--support-blue);
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .gallery-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-top: 18px;
+  }
+
+  .gallery-grid img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .28s ease;
+    border: 1px solid var(--card-border);
+  }
+
+  .gallery-grid img:hover {
+    transform: scale(1.03);
+  }
+
+  #lightbox {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    padding: 20px;
+  }
+
+  #lightbox img {
+    max-width: 92%;
+    max-height: 92%;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact-card {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--panel);
+    padding: 26px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .contact-card .left {
+    color: #111;
+    text-align: center;
+    width: 100%;
+  }
+
+  .contact-card a {
+    color: var(--support-blue);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  footer {
+    text-align: center;
+    padding: 22px;
+    color: #555;
+    border-top: 1px solid var(--card-border);
+    margin-top: 30px;
+  }
+
+  #topBtn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 999;
+    background: var(--support-blue);
+    color: #fff;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    display: none;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(26, 115, 232, 0.18);
+  }
+
+  @media (max-width:900px) {
+    header { padding: 12px 16px; }
+    .hero h2 { font-size: 28px; }
+    .gallery-grid img { height: 150px; }
+    .card { padding: 16px; }
+  }
+
+  body.danger-mode {
+    background: #111;
+    color: #fff;
+  }
+
+  body.danger-mode header {
+    background: #222;
+    border-color: #333;
+  }
+
+  body.danger-mode .card {
+    background: #222;
+    border-color: #444;
+  }
+
+  body.danger-mode .stat {
+    background: #222;
+    border-color: #444;
+  }
+
+  body.danger-mode .btn-danger {
+    background: #ff3d3d;
+  }
+
+  body.danger-mode .hero {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  h2{
+    font-size: 30px !important;
+    font-weight: 600 !important;
+  }
+
+  h1{
+    font-size:44px   !important;
+    letter-spacing:1px  !important;
+    margin-bottom:12px  !important;
+    color:#111  !important;
+    font-weight:900   !important;
+    transform:translateY(18px)   !important;
+    animation:slideUp .9s .15s forwards   !important;
+  }
+
+  p{
+    font-size: 20px !important;
+  }
+
+/* icon */
+        /* Base Button Styles */
+.btn {
+  /* background: transparent; */
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+body.danger-mode #connect {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(232, 224, 224, 0.15);
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark Mode Body Class */
+body.danger-mode {
+  background: #111;
+}
+
+/* Dark Mode Text Colors */
+body.danger-mode h1,
+body.danger-mode h2 {
+  color: #fff;
+}
+
+body.danger-mode h3{
+  color: #fff;
+}
+
+body.danger-mode #Modi{
+  color: #000;
+}
+ 
+
+body.danger-mode #rolex{
+  color: #fff !important;
+}
+ 
+
+body.danger-mode p {
+  color: #aaa;
+}
+
+/* Specific paragraph colors for dark mode */
+body.danger-mode .hero p,
+body.danger-mode .section-title p,
+body.danger-mode .stat p {
+  color: #F28300;
+}
+/* icon */
+body.danger-mode #rolex{
+  color: #fff;
+}
+
+
+
+
+  
+</style>
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="logo">
+      <img id="nsgLogo" src="./image/National_security_guard_logo.png" alt="NSG Logo" onerror="handleLogoError()">
+      <i class="fa-solid fa-shield-cat" id="logoFallback" aria-hidden="true"></i>
+      <h2 style="color: #111;">NSG SUPERVISOR</h2>
+    </div>
+  </div>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+
+    <a href="#divisions">Divisions</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+
+     
+    </div>
+  </nav>
+
+  <div class="controls">
+    <button class="btn" id="toggleDanger" title="Toggle Danger Theme"><i class="ri-sun-line"></i></button>
+    <button class="btn btn-danger" id="secureBtn"><i class="fa-solid fa-lock"></i> Supervisor</button>
+  </div>
+</header>
+
+<section>
+  <div class="tarun">
+    <!-- gemini -->
+      <div class="w-full max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left Column: Director General Profile -->
+            <div class="lg:col-span-3 flex items-center justify-center">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center w-full max-w-sm">
+                    <img src="https://nsg.gov.in/resources/uploads/uploadManualfile/171386818625.png" alt="Shri Brighu Srinivasan" class="w-48 h-48 mx-auto rounded-full object-cover border-4 border-gray-200">
+                    <h3 id="Modi"  class="text-xl font-bold mt-4 text-gray-800">Shri Brighu Srinivasan, IPS</h3>
+                    <p class="text-gray-500 mt-1">Director General</p>
+                    <div class="mt-6">
+                        <a href="#" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors duration-300">DG's Message</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Column: Image Carousel -->
+            <div class="lg:col-span-6 relative w-full aspect-[4/3] overflow-hidden rounded-lg shadow-xl">
+                <!-- Carousel images will be dynamically inserted here -->
+                <div id="carousel-container" class="w-full h-full"></div>
+                
+                <!-- Carousel Navigation Arrows -->
+                <button id="prevBtn" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button id="nextBtn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+                
+                <!-- Carousel Dot Indicators -->
+                <div id="dots-container" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                    <!-- Dots will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Right Column: Ministers Profiles -->
+            <div class="lg:col-span-3 flex items-center justify-center">
+                <div class="space-y-6 w-full max-w-sm">
+                    <!-- Prime Minister Card -->
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4">
+                        <img src="https://nsg.gov.in/assets-nsg/images/narendra-modi.png" alt="Shri. Narendra Modi" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+                        <div>
+                            <h3 id="Modi"   class="font-bold text-gray-800">Shri. Narendra Modi</h3>
+                            <p class="text-sm text-gray-500">Honorable Prime Minister of India</p>
+                        </div>
+                    </div>
+                    <!-- Home Minister Card -->
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4">
+                        <img src="https://nsg.gov.in/assets-nsg/images/amit-shah.png" alt="Shri. Amit Shah" class="img-fluid w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+                         <div>
+                            <h3  id="Modi" class="font-bold text-gray-800">Shri. Amit Shah</h3>
+                            <p class="text-sm text-gray-500">Honorable Home Minister of India</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+  </div>
+ 
+</section>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <h1 id="rolex">NSG Supervisor — AI Command & Monitoring System</h1>
+  <p>Integrating Artificial Intelligence and Machine Learning to enhance decision-making, detect anomalies, and secure national interests with unmatched precision and speed.</p>
+  <div class="cta">
+    <button class="btn btn-danger" onclick="secureConsole()"> 
+      <i class="fa-solid fa-shield-halved"></i> Launch Secure Console
+    </button>
+    <button class="btn btn-outline" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" id="connect"><i class="fa-solid fa-phone"></i> Contact HQ</button>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-title">
+    <h2>About NSG</h2>
+    <p>The National Security Guard (NSG) — India's elite counter-terrorism and crisis response unit, powered by technology and precision.</p>
+    <p style="margin-top: 20px;">Established in 1984, NSG operates as a specialized force for counter-terrorism, hostage rescue, and VIP security. With AI-enabled data analytics, surveillance integration, and anomaly detection modules, NSG Supervisors can now make faster, smarter, and mission-critical decisions.</p>
+  </div>
+  <!-- <div style="max-width:980px;margin:0 auto;color:var(--muted);font-size:14px;text-align:center;"> -->
+  <!-- </div> -->
+</section>
+
+<!-- MISSION -->
+<section id="mission" style="background:transparent;">
+  <div class="section-title">
+    <h2>Mission</h2>
+    <p>To protect national integrity through rapid, data-driven, and intelligent response systems — powered by AI and human excellence.</p>
+  </div>
+  <div class="stats-grid" style="margin-top:28px;">
+    <div class="stat"><h3 data-target="1580">0</h3><p>Successful Operations</p></div>
+    <div class="stat"><h3 data-target="5200">0</h3><p>Commandos Trained</p></div>
+    <div class="stat"><h3 data-target="40">0</h3><p>Years of Service</p></div>
+  </div>
+</section>
+
+<!-- DIVISIONS -->
+<section class="divisions" id="divisions">
+  <div class="section-title">
+    <h2>Core Divisions</h2>
+    <p>Highly specialized operational units integrating human skill and AI-driven intelligence.</p>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="icon"><i class="fa-solid fa-person-military-pointing"></i></div>
+      <div><h3>Counter-Terrorism Group</h3><p>Elite tactical teams trained for real-time hostage rescue and precision counter-terrorism actions supported by AI surveillance feeds.</p></div>
+    </div>
+    <div class="card"><div class="icon"><i class="fa-solid fa-bomb"></i></div>
+      <div><h3>Bomb Disposal Squad</h3><p>Experts in detecting, analyzing, and neutralizing explosive threats with robotic and AI-assisted detection systems.</p></div>
+    </div>
+    <div class="card"><div class="icon"><i class="fa-solid fa-dumbbell"></i></div>
+      <div><h3>Training & Tactical Wing</h3><p>Advanced programs focusing on mental strength, endurance, and integration of machine-learning tools for predictive scenario planning.</p></div>
+    </div>
+    <div class="card"><div class="icon"><i class="fa-solid fa-network-wired"></i></div>
+      <div><h3>Cyber & Intelligence Cell</h3><p>Real-time anomaly detection, data monitoring, and cyber defense using deep learning and AI-assisted decision systems.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div class="section-title"><h2>NSG in Action</h2><p>Operational glimpses from AI-integrated missions, advanced training modules, and field exercises.</p></div>
+  <div class="gallery-grid">
+    <img src="./image/comando.jpg" alt="Commandos" loading="lazy">
+    <img src="./image/nsg parade.jpeg" alt="NSG Parade" loading="lazy">
+    <img src="./image/taning.jpg" alt="Training" loading="lazy">
+    <img src="./image/vehical.jpg" alt="Vehicles" loading="lazy">
+  </div>
+</section>
+
+<div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt="expanded" /></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-title"><h2>Contact NSG Headquarters</h2><p>For verified supervisory access, coordination, and system-level integration inquiries.</p></div>
+  <div class="contact-card">
+    <div class="left">
+      <strong>NSG Headquarters</strong>
+      <p style="color:var(--muted);margin-top:6px">Mehram Nagar, Palam, New Delhi - 110037</p>
+      <p style="color:var(--muted);margin-top:6px">📞 +91-11-26735521 | ✉️ <a href="mailto:hq@nsg.gov.in">hq@nsg.gov.in</a></p>
+    </div>
+    <div class="right" style="text-align:right">
+      <a href="https://nsg.gov.in" target="_blank" rel="noopener">Official NSG Website</a>
+      <p style="color:var(--muted);font-size:12px;margin-top:6px">Secure Connection Verified</p>
+    </div>
+  </div>
+</section>
+
+<footer>© 2025 NSG Supervisor System | Developed for AI-Integrated Command Operations</footer>
+<button id="topBtn"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script>
+// const toggleBtn=document.getElementById('toggleDanger');
+// toggleBtn.addEventListener('click',()=>document.body.classList.toggle('danger-mode'));
+
+function handleLogoError(){
+  document.getElementById('nsgLogo').style.display='none';
+  document.getElementById('logoFallback').style.display='flex';
+}
+
+document.querySelectorAll('.stat h3').forEach(el=>{
+  const target=+el.dataset.target;
+  let count=0;
+  const inc=target/100;
+  const timer=setInterval(()=>{
+    count+=inc;
+    el.textContent=Math.floor(count);
+    if(count>=target){el.textContent=target;clearInterval(timer);}
+  },20);
+});
+
+const gallery=document.querySelectorAll('.gallery-grid img');
+const lightbox=document.getElementById('lightbox');
+const lightboxImg=document.getElementById('lightbox-img');
+gallery.forEach(img=>img.addEventListener('click',()=>{
+  lightboxImg.src=img.src;lightbox.style.display='flex';
+}));
+function closeLightbox(){lightbox.style.display='none';}
+
+const topBtn=document.getElementById('topBtn');
+window.onscroll=()=>{if(document.documentElement.scrollTop>200){topBtn.style.display='block';}else{topBtn.style.display='none';}};
+topBtn.onclick=()=>{window.scrollTo({top:0,behavior:'smooth'});};
+
+function secureConsole() {
+  alert("Access Restricted: Authorized Supervisors Only.\nLaunching Secure Command Console before this you want to login first ...");
+  window.location.href = "login.html";
+}
+
+document.getElementById("secureBtn").addEventListener("click", function() {
+  alert("Access Restricted: Authorized Supervisors Only.\nRedirecting to Secure Login...");
+  window.location.href = "login.html"; // your login page
+});
+
+
+
+
+        // --- Carousel Logic ---
+        const images = [
+            "./image/nsg1.png",
+            "./image/nsg2.png",
+            "./image/nsg3.png",
+            "./image/nsg4.png",
+            "./image/nsg5.png",
+            "./image/nsg6.png",
+            "./image/nsg7.png",
+            "./image/nsg8.png",
+        ];
+        
+        let currentImageIndex = 0;
+        let slideInterval;
+
+        const carouselContainer = document.getElementById('carousel-container');
+        const dotsContainer = document.getElementById('dots-container');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+
+        // Function to show a specific slide
+        function showSlide(index) {
+            // Create the image element for the slide
+            const imgElement = document.createElement('img');
+            imgElement.src = images[index];
+            imgElement.alt = `Banner ${index + 1}`;
+            imgElement.className = 'carousel-item w-full h-full object-cover absolute top-0 left-0 opacity-0';
+            
+            // Clear the container and add the new image
+            carouselContainer.innerHTML = '';
+            carouselContainer.appendChild(imgElement);
+
+            // Trigger the fade-in animation
+            setTimeout(() => {
+                imgElement.classList.remove('opacity-0');
+                imgElement.classList.add('opacity-100');
+            }, 50); // Small delay to ensure transition triggers
+
+            // Update the active dot indicator
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, dotIndex) => {
+                dot.classList.toggle('active', dotIndex === index);
+            });
+
+            currentImageIndex = index;
+        }
+
+        // Function to show the next slide
+        function nextSlide() {
+            const newIndex = (currentImageIndex + 1) % images.length;
+            showSlide(newIndex);
+        }
+
+        // Function to show the previous slide
+        function prevSlide() {
+            const newIndex = (currentImageIndex - 1 + images.length) % images.length;
+            showSlide(newIndex);
+        }
+        
+        // Function to start the automatic slide transition
+        function startCarousel() {
+            slideInterval = setInterval(nextSlide, 3000); // Change image every 3 seconds
+        }
+
+        // Function to reset the interval timer
+        function resetInterval() {
+            clearInterval(slideInterval);
+            startCarousel();
+        }
+
+        // Create dot indicators for each image
+        images.forEach((_, index) => {
+            const dot = document.createElement('button');
+            dot.className = 'dot w-3 h-3 bg-white bg-opacity-50 rounded-full transition-colors';
+            dot.addEventListener('click', () => {
+                showSlide(index);
+                resetInterval();
+            });
+            dotsContainer.appendChild(dot);
+        });
+
+        // Event Listeners for navigation buttons
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetInterval();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetInterval();
+        });
+        
+        // Initialize the carousel
+        showSlide(0);
+        startCarousel();
+
+
+
+
+
+
+
+const toggleBtn = document.getElementById('toggleDanger');
+const themeIcon = toggleBtn.querySelector('i');
+
+toggleBtn.addEventListener('click', () => {
+  // Toggle the main class on the body
+  document.body.classList.toggle('danger-mode');
+
+  // Change the icon based on the current theme
+  if (document.body.classList.contains('danger-mode')) {
+    themeIcon.classList.remove('ri-sun-line');
+    themeIcon.classList.add('ri-moon-line');
+  } else {
+    themeIcon.classList.remove('ri-moon-line');
+    themeIcon.classList.add('ri-sun-line');
+  }
+});
+
+</script>
+</body>
+</html>

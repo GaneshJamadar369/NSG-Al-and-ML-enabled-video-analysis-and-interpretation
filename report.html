@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NSG — Videos & Reports</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1316; --card:#071018; --accent:#00e5ff; --warm:#ff7c42; --muted:#9aa6b2;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; font-family:Inter,system-ui,Segoe UI,Roboto; background:linear-gradient(180deg,#071018 0%, #0f1316 100%);
+  color:#e6f1ff; display:flex; flex-direction:column; align-items:center; padding:0;
+}
+header{
+  width:100%; background:var(--card); padding:24px 0; text-align:center; border-bottom:1px solid rgba(0,229,255,0.08);
+  box-shadow:0 4px 20px rgba(0,0,0,0.6);
+}
+header h1{margin:0; font-weight:700; font-size:28px; color:var(--accent);}
+header p{margin:4px 0 0; font-weight:400; font-size:14px; color:var(--muted);}
+.wrap{
+  width:100%; max-width:1100px; display:grid; grid-template-columns:1fr; gap:28px; padding:28px;
+}
+.card{
+  background:linear-gradient(180deg, rgba(2,10,26,0.85), rgba(2,10,26,0.75));
+  border:1px solid rgba(0,229,255,0.08); padding:20px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.6);
+}
+.row{display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;}
+.media{
+  flex:1 1 620px; min-width:300px; background:rgba(255,255,255,0.02); padding:16px; border-radius:10px;
+  display:flex; flex-direction:column; align-items:stretch;
+}
+.media video{width:100%; height:360px; border-radius:8px; background:#000; outline:none;}
+.media h3{margin:0 0 12px 0; color:var(--accent); font-size:20px;}
+.meta{display:flex; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap;}
+.btn{
+  background:var(--warm); color:#fff; padding:10px 14px; border-radius:8px; font-weight:600; text-decoration:none; border:none;
+  cursor:pointer; box-shadow:0 6px 14px rgba(255,124,66,0.14);
+}
+.btn.secondary{background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--accent);}
+.label{color:var(--muted); font-size:13px;}
+.files{
+  margin-top:12px; background:rgba(0,229,255,0.03); border-radius:8px; padding:10px; min-height:48px;
+}
+.files ul{list-style:none; padding:0; margin:0;}
+.files li{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 10px; border-radius:6px;
+  background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(0,0,0,0)); margin-bottom:8px; font-size:14px;
+}
+.fname{flex:1; color:#dfefff; word-break:break-word;}
+.fmeta{color:var(--muted); font-size:12px; margin-right:8px;}
+.file-actions{display:flex; gap:8px; align-items:center;}
+.small{font-size:12px; padding:6px 10px; border-radius:6px; background:rgba(255,255,255,0.03); color:var(--accent); border:1px solid rgba(0,229,255,0.06); cursor:pointer;}
+.preview-area{margin-top:12px; border-radius:8px; overflow:hidden; background:#000; min-height:120px; display:flex; align-items:center; justify-content:center;}
+.preview-area img, .preview-area video{max-width:100%; max-height:360px; display:block;}
+.hint{color:var(--muted); font-size:13px; margin-top:8px;}
+footer{
+  width:100%; text-align:center; padding:16px 0; background:var(--card); border-top:1px solid rgba(0,229,255,0.08); color:var(--muted); font-size:13px;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.6); margin-top:20px;
+}
+@media(max-width:900px){
+  .media video{height:220px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
+    <img src="image\logo1.png" alt="NSG Logo" style="height:40px; width:auto;">
+    <h1 style="margin:0; font-weight:700; font-size:28px; color:var(--accent)">NSG Report Analysis</h1>
+  </div>
+  <p>By Administrator</p>
+</header>
+
+<div class="wrap">
+  <!-- CARD 1 -->
+  <div class="card" id="card1">
+    <div class="row">
+      <div class="media">
+        <h3>Report Video — 1</h3>
+        <video id="video1" controls preload="metadata">
+          <source src="./video/anomoly1.mp4" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+        <div class="meta">
+          <a id="downloadZip1" class="btn" href="report/nsg_reports(ANAMOLY-).zip" download>Download Report (ZIP)</a>
+          <button id="openZip1" class="btn secondary">Open Report (Show files)</button>
+          <span class="label">Size & files listed below</span>
+        </div>
+        <div class="files" id="files1">
+          <div class="hint">Report contents will appear here after you click <strong>Open Report</strong> or <strong>Download</strong>.</div>
+        </div>
+        <div class="preview-area" id="preview1">
+          <div style="color:var(--muted);font-size:14px;">Select a file to preview or download</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 2 -->
+  <div class="card" id="card2">
+    <div class="row">
+      <div class="media">
+        <h3>Report Video — 2</h3>
+        <video id="video2" controls preload="metadata">
+          <source src="./video/anomoly2.mp4" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+        <div class="meta">
+          <a id="downloadZip2" class="btn" href="report/nsg_reports(normal).zip" download>Download Report (ZIP)</a>
+          <button id="openZip2" class="btn secondary">Open Report (Show files)</button>
+          <span class="label">Size & files listed below</span>
+        </div>
+        <div class="files" id="files2">
+          <div class="hint">Report contents will appear here after you click <strong>Open Report</strong> or <strong>Download</strong>.</div>
+        </div>
+        <div class="preview-area" id="preview2">
+          <div style="color:var(--muted);font-size:14px;">Select a file to preview or download</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 NSG. Admin: By Administrator.
+</footer>
+
+<!-- JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+// --- JS logic same as previous code ---
+function bytesToSize(bytes){if(bytes===0)return'0 B';const k=1024;const sizes=['B','KB','MB','GB','TB'];const i=Math.floor(Math.log(bytes)/Math.log(k));return parseFloat((bytes/Math.pow(k,i)).toFixed(2))+' '+sizes[i];}
+async function fetchAndList(zipUrl, filesContainer, previewArea){filesContainer.innerHTML='<div class="hint">Loading report contents…</div>';try{const resp=await fetch(zipUrl);if(!resp.ok)throw new Error('Failed to fetch ZIP: '+resp.status+' '+resp.statusText);const ab=await resp.arrayBuffer();const zip=await JSZip.loadAsync(ab);const ul=document.createElement('ul');ul.style.margin='0';ul.style.padding='0';const names=Object.keys(zip.files).sort();if(names.length===0){filesContainer.innerHTML='<div class="hint">ZIP is empty.</div>';return;}names.forEach(name=>{const entry=zip.files[name];if(entry.dir)return;const li=document.createElement('li');const left=document.createElement('div');left.style.display='flex';left.style.flexDirection='column';const fname=document.createElement('div');fname.className='fname';fname.textContent=name;const fmeta=document.createElement('div');fmeta.className='fmeta';fmeta.textContent='Compressed size: '+(entry._data&&entry._data.compressedSize?bytesToSize(entry._data.compressedSize):'');left.appendChild(fname);left.appendChild(fmeta);const actions=document.createElement('div');actions.className='file-actions';const previewBtn=document.createElement('button');previewBtn.className='small';previewBtn.textContent='Preview';const downloadBtn=document.createElement('button');downloadBtn.className='small';downloadBtn.textContent='Download';previewBtn.addEventListener('click',async()=>{previewArea.innerHTML='<div style="color:var(--muted)">Preparing preview…</div>';try{const blob=await entry.async('blob');const mime=blob.type||inferMimeFromName(name);if(mime.startsWith('image/')){const url=URL.createObjectURL(blob);previewArea.innerHTML='';const img=document.createElement('img');img.src=url;img.style.maxWidth='100%';img.style.maxHeight='360px';previewArea.appendChild(img);}else if(mime.startsWith('video/')){const url=URL.createObjectURL(blob);previewArea.innerHTML='';const vid=document.createElement('video');vid.controls=true;vid.src=url;vid.style.maxWidth='100%';vid.style.maxHeight='360px';previewArea.appendChild(vid);vid.play().catch(()=>{});}else if(mime.startsWith('text/')||name.toLowerCase().match(/\.(log|txt|json|csv|xml|html|md)$/)){const text=await entry.async('string');previewArea.innerHTML='';const pre=document.createElement('pre');pre.style.whiteSpace='pre-wrap';pre.style.color='#cfefff';pre.style.padding='12px';pre.style.maxHeight='360px';pre.style.overflow='auto';pre.textContent=text;previewArea.appendChild(pre);}else{previewArea.innerHTML='<div style="color:var(--muted)">Preview not available for this file type. Use Download.</div>'}}catch(err){previewArea.innerHTML='<div style="color:#ff9999">Preview failed: '+err.message+'</div>';console.error(err);}});downloadBtn.addEventListener('click',async()=>{try{const blob=await entry.async('blob');const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=extractFilename(name);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}catch(err){alert('Download failed: '+err.message);}});actions.appendChild(previewBtn);actions.appendChild(downloadBtn);li.appendChild(left);li.appendChild(actions);ul.appendChild(li);});filesContainer.innerHTML='';filesContainer.appendChild(ul);}catch(err){filesContainer.innerHTML='<div class="hint" style="color:#ff9999">Error loading ZIP: '+err.message+'</div>';console.error(err);}}
+function extractFilename(path){return path.split('/').pop();}
+function inferMimeFromName(name){const ext=name.split('.').pop().toLowerCase();const map={'jpg':'image/jpeg','jpeg':'image/jpeg','png':'image/png','gif':'image/gif','mp4':'video/mp4','mov':'video/quicktime','webm':'video/webm','txt':'text/plain','log':'text/plain','json':'application/json','csv':'text/csv','pdf':'application/pdf'};return map[ext]||'application/octet-stream';}
+const downloadZip1=document.getElementById('downloadZip1');const openZip1=document.getElementById('openZip1');const files1=document.getElementById('files1');const preview1=document.getElementById('preview1');downloadZip1.addEventListener('click',(e)=>{setTimeout(()=>fetchAndList(downloadZip1.href,files1,preview1),300);});openZip1.addEventListener('click',()=>fetchAndList(downloadZip1.href,files1,preview1));
+const downloadZip2=document.getElementById('downloadZip2');const openZip2=document.getElementById('openZip2');const files2=document.getElementById('files2');const preview2=document.getElementById('preview2');downloadZip2.addEventListener('click',(e)=>{setTimeout(()=>fetchAndList(downloadZip2.href,files2,preview2),300);});openZip2.addEventListener('click',()=>fetchAndList(downloadZip2.href,files2,preview2));
+</script>
+
+</body>
+</html>

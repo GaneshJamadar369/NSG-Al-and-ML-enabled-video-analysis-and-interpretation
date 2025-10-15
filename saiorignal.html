@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NSG Tactical — Multi-Cam Control</title>
+  <link rel="shortcut icon" href="./image/logo1.png" type="image/x-icon">
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    /* -------------------
+     * Root & Variables (Dark Mode Default)
+     * ------------------- */
+    :root {
+      --bg-dark: #1a1d21;
+      --bg-med: #2c3038;
+      --bg-light: #3a3f4b;
+      --accent-red: #FF3B3B;
+      --accent-red-dark: #D43131;
+      --text-light: #f0f0f0;
+      --text-med: #a0a0a0;
+      --text-dark: #111;
+      --border-color: #4a4f5c;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --sidebar-width: 260px;
+    }
+
+    body.light-mode {
+      --bg-dark: #ffffff;
+      --bg-med: #f0f2f5;
+      --bg-light: #e4e6eb;
+      --text-light: #1c1e21;
+      --text-med: #65676b;
+      --text-dark: #000000;
+      --border-color: #ced0d4;
+    }
+
+
+    h2{
+        color: var(--accent-red) !important;
+        font-size: 35px !important;
+    }
+
+    /* -------------------
+     * Base & Reset
+     * ------------------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Roboto Condensed', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      overflow: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button, input {
+      font-family: inherit;
+    }
+
+    /* -------------------
+     * Main Layout
+     * ------------------- */
+    #main {
+      display: flex;
+      height: 100vh;
+    }
+
+    #side_bar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-med);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: margin-left 0.35s ease-in-out, background-color 0.3s, border-color 0.3s;
+    }
+
+    #content-area {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      transition: all 0.35s ease-in-out;
+    }
+    
+    main#scrollable-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    /* -------------------
+     * Sidebar Collapsed State
+     * ------------------- */
+    #main.sidebar-collapsed #side_bar {
+      margin-left: calc(-1 * var(--sidebar-width));
+    }
+
+    @media (max-width: 992px) {
+      #main #side_bar {
+        position: absolute;
+        z-index: 1001;
+        height: 100%;
+      }
+      #main.sidebar-collapsed #side_bar {
+         margin-left: calc(-1 * var(--sidebar-width));
+      }
+       #main:not(.sidebar-collapsed)::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+      }
+    }
+
+
+    /* -------------------
+     * Sidebar Components
+     * ------------------- */
+    .brand {
+      display: flex;
+      align-items: center;
+      padding: 1.5rem;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand .emblem {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--bg-light);
+    }
+
+    .brand .title {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .brand .subtitle {
+      font-size: 0.8rem;
+      color: var(--text-med);
+    }
+
+    nav {
+      flex-grow: 1;
+      padding-top: 1rem;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      gap: 1rem;
+      font-size: 1rem;
+      color: var(--text-med);
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    nav a:hover {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    nav a.active {
+      color: var(--text-light);
+      font-weight: 700;
+      border-left-color: var(--accent-red);
+      background-color: var(--bg-dark);
+    }
+
+    .sidebar-bottom {
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* -------------------
+     * Header
+     * ------------------- */
+    header#nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background-color: var(--bg-med);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    #pageTitle {
+      font-size: 1.5rem;
+    }
+
+    .commander {
+      font-size: 0.9rem;
+      color: var(--text-med);
+    }
+
+    /* -------------------
+     * Main Content
+     * ------------------- */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .controls .left, .controls .right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .status, .fps {
+      background-color: var(--bg-med);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+
+    #cam-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .cam-card {
+      background-color: var(--bg-med);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    
+    .card-header {
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .feed-wrap {
+      position: relative;
+      background-color: #000;
+      aspect-ratio: 16 / 9;
+    }
+
+    .cam-video, .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .cam-controls {
+      padding: 1rem;
+      height: 233px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem 1rem;
+      font-size: 0.9rem;
+      align-items: center;
+      background-color: var(--bg-light);
+      transition: background-color 0.3s;
+    }
+
+    .cam-controls .meta, .cam-controls .tamper-ind {
+      grid-column: 2 / -1;
+      text-align: right;
+    }
+
+    .cam-controls input[type="file"] {
+      grid-column: 1 / -1;
+    }
+     .cam-controls input[type="range"] {
+      width: 100%;
+    }
+
+
+    /* -------------------
+     * Side Panels
+     * ------------------- */
+      #side-panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+    .panel {
+      background-color: var(--bg-med);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    
+    .panel-title {
+      padding: 0.75rem 1rem;
+      font-weight: bold;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .alerts-list {
+      list-style-type: none;
+      padding: 1rem;
+      height: 200px;
+      overflow-y: auto;
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .log-table th, .log-table td {
+      padding: 0.5rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .log-table thead {
+      background-color: var(--bg-light);
+       transition: background-color 0.3s;
+    }
+    .log-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .footer {
+        padding-top: 1.5rem;
+        text-align: center;
+        color: var(--text-med);
+    }
+
+
+    /* -------------------
+     * Generic Components
+     * ------------------- */
+    .btn {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn:hover {
+      background-color: #4e5563;
+      border-color: #6c7382;
+    }
+    
+    body.light-mode .btn:hover {
+        background-color: #d8dbe0;
+        border-color: #b0b3b8;
+    }
+
+    .btn.primary {
+      background-color: var(--accent-red);
+      border-color: var(--accent-red);
+      color: white;
+      font-weight: 700;
+    }
+    
+    .btn.primary:hover {
+      background-color: var(--accent-red-dark);
+      border-color: var(--accent-red-dark);
+    }
+    
+    .btn.small {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    #menuBtn.mini-btn, #themeToggleBtn.mini-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .badge.active {
+      background-color: var(--success);
+    }
+
+    /* -------------------
+     * Popup
+     * ------------------- */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-med);
+      border: 2px solid var(--accent-red);
+      padding: 25px 35px;
+      z-index: 1002;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      color: var(--text-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    #popup label {
+      font-size: 16px;
+      display: block;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    #fileUploadDiv {
+      margin-top: 15px;
+    }
+
+    #popup input[type="file"] {
+      margin-top: 10px;
+    }
+
+    #popup button {
+      margin-top: 20px;
+      padding: 8px 20px;
+      background: var(--accent-red);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    #popup button:hover {
+      background: var(--accent-red-dark);
+    }
+
+
+    .nav-right{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+
+    #cam-controls {
+      height: 233px;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        /* height: 220px; */
+    }
+
+    #cam-controls .btn {
+      width: 100%;
+      /* margin-bottom: 0.5rem; */
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s 
+      ease; 
+      padding: 0.6rem 1rem;
+    }
+    
+    
+    #caam {
+      /* height: 50px; */
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    #can-controls button{
+      width: 100%;
+      padding: 0px 90px;
+      border-radius: 6px;
+      cursor: pointer;
+ 
+      
+    }
+
+
+      .btn {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+
+ 
+ 
+  </style>
+</head>
+<body>
+  <div id="main">
+    <aside id="side_bar">
+      <div class="brand">
+        <img src="./image/logo1.png" alt="NSG" class="emblem">
+        <div>
+          <div class="title">NSG — Tactical</div>
+          <div class="subtitle">Multi-Cam Command</div>
+        </div>
+      </div>
+
+      <nav>
+        <a class="active"><i class="bi bi-grid-fill"></i> Overview</a>
+        <a><i class="bi bi-camera-video-fill"></i> Cameras</a>
+        <a><i class="bi bi-bell-fill"></i> Alerts</a>
+        <a><i class="bi bi-gear-fill"></i> Settings</a>
+        <a href="heatmap.html"><i class="bi bi-person-badge-fill"></i> Heatmap</a>
+        <a id="watchList"><i class="bi bi-eye-fill"></i> Watch List</a>
+            <!-- New Report Button -->
+    <a href="report.html"><i class="bi bi-file-earmark-text-fill"></i> Reports</a>
+      </nav>
+
+      <!-- Popup is outside the main flow but associated with the sidebar -->
+      <div class="sidebar-bottom">
+        <button id="toggleRadar" class="btn small">Radar</button>
+        <button id="downloadLog" class="btn small">Export Log</button>
+      </div>
+    </aside>
+
+    <div id="content-area">
+      <header id="nav">
+        <div class="nav-left">
+          <button id="menuBtn" class="mini-btn"><i class="bi bi-list"></i></button>
+          <h2 id="pageTitle">Multi-Cam Control</h2>
+        </div>
+        <div class="nav-right">
+            <button id="themeToggleBtn" class="mini-btn">
+                <i class="ri-sun-line"></i>
+            </button>
+          <div class="commander"><strong>Administrator</strong></div>
+        </div>
+      </header>
+
+      <main id="scrollable-content">
+        <section class="controls">
+          <div class="left">
+            <button id="startAll" class="btn primary">Start All</button>
+            <button id="stopAll" class="btn">Stop All</button>
+            <button id="snapshotAll" class="btn">Snapshot All</button>
+          </div>
+          <div class="right">
+            <div class="status">Model: <span id="modelStatus">Loading...</span></div>
+            <div class="fps">FPS: <span id="fps">0</span></div>
+          </div>
+        </section>
+
+        <!-- Multi camera grid -->
+
+        <section id="cam-grid">
+          <!-- CCTV -->
+          <div class="cam-card" data-cam="cctv">
+            <div class="card-header"><strong>CCTV("Real-time suspicious object detection by our proposed model.")</strong><span class="badge" id="status-cctv">OFF</span></div>
+            <div class="feed-wrap">
+              <video class="cam-video" data-cam="cctv" autoplay playsinline muted></video>
+              <canvas class="overlay" data-cam="cctv"></canvas>
+            </div>
+            <div class="cam-controls">
+              <button class="btn start" data-cam="cctv">Start</button>
+              <button class="btn stop" data-cam="cctv">Stop</button>
+              <button class="btn record" data-cam="cctv">Record</button>
+              <button class="btn snap" data-cam="cctv">Snapshot</button> <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+
+             
+              <div class="tamper-ind" id="tamper-cctv">OK</div>
+               <input type="file"  class="" data-cam="cctv">
+               <div class="meta"><span id="meta-cctv">—</span></div>
+            </div>
+          </div>
+
+<div class="cam-card" data-cam="drone">
+  <div class="card-header">
+    <strong>Real-time suspicious movement detected by our proposed model orignal video</strong>
+    <span class="badge" id="status-drone">OFF</span>
+  </div>
+  <div class="feed-wrap">
+    <video id="drone-video" class="cam-video" data-cam="drone" autoplay playsinline muted>
+      <source src="./video/normal1.mp4">
+    </video>
+    <canvas class="overlay" data-cam="drone"></canvas>
+  </div>
+  <div class="cam-controls" id="cam-controls">
+    <!-- 4 main buttons -->
+     <div id="caam">
+          <button class="btn play-source" data-cam="drone">Play Source</button>
+    <button class="btn play-detection" data-cam="drone">Play Detection</button>
+     </div>
+     <div id="caam">
+      
+    <button class="btn record" data-cam="drone">Record</button>
+    <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+     </div>
+
+    <!-- Professional Note -->
+   <div class="meta" id="meta" style="
+    margin-top:10px; 
+    font-size:14px; 
+    color:#fbfcfc; 
+    background: #333; 
+    padding: 10px 12px; 
+    border-left: 4px solid #007bff; 
+    border-radius: 4px;
+    max-width: 100%;
+    line-height: 1.4;
+">
+  <em>
+    Note: This link directs to our proposed model, which you can easily integrate into your system. 
+    <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="
+        color: #615fef; 
+        font-weight: bold; 
+        font-size: 15px; 
+        text-decoration: underline;
+    ">View Model</a>
+  </em>
+</div>
+  </div>
+</div>
+
+          <!-- Hidden Cam -->
+          <div class="cam-card" data-cam="hidden">
+            <div class="card-header"><strong>Real-time suspicious movement detected by our proposed model anolomy detected video</strong><span class="badge" id="status-hidden">OFF</span></div>
+            <div class="feed-wrap">
+             <video 
+  class="cam-video" 
+  data-cam="drone" 
+  autoplay 
+  playsinline 
+  muted 
+  
+  src="./video/anomoly1.mp4">
+</video>
+              <canvas class="overlay" data-cam="hidden"></canvas>
+            </div>
+            <!-- <div class="cam-controls">
+                <button class="btn start" data-cam="hidden">Start</button>
+                <button class="btn stop" data-cam="hidden">Stop</button>
+                <button class="btn record" data-cam="hidden">Record</button>
+                <button class="btn snap" data-cam="hidden">Snapshot</button>
+                <label class="small">Battery</label>
+                <input type="range" min="0" max="100" value="85" class="battery" data-cam="hidden">
+                <div class="meta"><span id="meta-hidden">bat:85%</span></div>
+            </div> -->
+
+            <!--  -->
+            <div class="cam-controls" id="cam-controls" style="height: 233px;">
+    <!-- 4 main buttons -->
+     <div id="caam">
+          <button class="btn play-source" data-cam="drone">Play Source</button>
+    <button class="btn play-detection" data-cam="drone">Play Detection</button>
+     </div>
+     <div id="caam">
+      
+    <button class="btn record" data-cam="drone">Record</button>
+    <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+     </div>
+     
+
+    <!-- Professional Note -->
+   <div class="meta" id="meta" style="
+    margin-top:10px; 
+    font-size:14px; 
+    color:#fbfcfc; 
+    background: #333; 
+    padding: 10px 12px; 
+    border-left: 4px solid #007bff; 
+    border-radius: 4px;
+    max-width: 100%;
+    line-height: 1.4;
+">
+  <em>
+  <em>Note: Due to paid hosting, this model cannot be hosted online, but you can run it locally on your system. <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="color:#007bff; font-weight:600;">Open Model</a></em>
+
+  </em>
+</div>
+  </div>
+            <!--  -->
+          </div>
+        </section>
+        <div id="space" style="height: 25px;">
+<!-- tarun gajjalwar -->
+        </div>
+
+        <!-- Multi camera grid -->
+
+        <section id="cam-grid">
+          <!-- CCTV -->
+          <div class="cam-card" data-cam="cctv">
+            <div class="card-header"><strong>CCTV  Additional Camera (Inactive)</strong><span class="badge" id="status-cctv">OFF</span></div>
+            <div class="feed-wrap">
+              <video class="cam-video" data-cam="cctv" autoplay playsinline muted></video>
+              <canvas class="overlay" data-cam="cctv"></canvas>
+            </div>
+            <div class="cam-controls">
+              <button class="btn start" data-cam="cctv">Start</button>
+              <button class="btn stop" data-cam="cctv">Stop</button>
+              <button class="btn record" data-cam="cctv">Record</button>
+              <button class="btn snap" data-cam="cctv">Snapshot</button> <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+
+             
+              <div class="tamper-ind" id="tamper-cctv">OK</div>
+               <input type="file"  class="" data-cam="cctv">
+               <div class="meta"><span id="meta-cctv">—</span></div>
+            </div>
+          </div>
+
+<div class="cam-card" data-cam="drone">
+  <div class="card-header">
+    <strong>Real-time suspicious movement detected by our proposed model orignal video</strong>
+    <span class="badge" id="status-drone">OFF</span>
+  </div>
+  <div class="feed-wrap">
+    <video id="drone-video" class="cam-video" data-cam="drone" autoplay playsinline muted>
+      <source src="./video/normal1.mp4">
+    </video>
+    <canvas class="overlay" data-cam="drone"></canvas>
+  </div>
+  <div class="cam-controls" id="cam-controls">
+    <!-- 4 main buttons -->
+     <div id="caam">
+          <button class="btn play-source" data-cam="drone">Play Source</button>
+    <button class="btn play-detection" data-cam="drone">Play Detection</button>
+     </div>
+     <div id="caam">
+      
+    <button class="btn record" data-cam="drone">Record</button>
+    <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+     </div>
+
+    <!-- Professional Note -->
+   <div class="meta" id="meta" style="
+    margin-top:10px; 
+    font-size:14px; 
+    color:#fbfcfc; 
+    background: #333; 
+    padding: 10px 12px; 
+    border-left: 4px solid #007bff; 
+    border-radius: 4px;
+    max-width: 100%;
+    line-height: 1.4;
+">
+  <em>
+    Note: This link directs to our proposed model, which you can easily integrate into your system. 
+    <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="
+        color: #615fef; 
+        font-weight: bold; 
+        font-size: 15px; 
+        text-decoration: underline;
+    ">View Model</a>
+  </em>
+</div>
+  </div>
+</div>
+
+          <!-- Hidden Cam -->
+          <div class="cam-card" data-cam="hidden">
+            <div class="card-header"><strong>Real-time suspicious movement detected by our proposed model anolomy detected video</strong><span class="badge" id="status-hidden">OFF</span></div>
+            <div class="feed-wrap">
+             <video 
+  class="cam-video" 
+  data-cam="drone" 
+  autoplay 
+  playsinline 
+  muted 
+  
+  src="./video/anomoly2.mp4">
+</video>
+              <canvas class="overlay" data-cam="hidden"></canvas>
+            </div>
+            <!-- <div class="cam-controls">
+                <button class="btn start" data-cam="hidden">Start</button>
+                <button class="btn stop" data-cam="hidden">Stop</button>
+                <button class="btn record" data-cam="hidden">Record</button>
+                <button class="btn snap" data-cam="hidden">Snapshot</button>
+                <label class="small">Battery</label>
+                <input type="range" min="0" max="100" value="85" class="battery" data-cam="hidden">
+                <div class="meta"><span id="meta-hidden">bat:85%</span></div>
+            </div> -->
+
+            <!--  -->
+            <div class="cam-controls" id="cam-controls" style="height: 233px;">
+    <!-- 4 main buttons -->
+     <div id="caam">
+          <button class="btn play-source" data-cam="drone">Play Source</button>
+    <button class="btn play-detection" data-cam="drone">Play Detection</button>
+     </div>
+     <div id="caam">
+      
+    <button class="btn record" data-cam="drone">Record</button>
+    <button class="btn screen-exception" data-cam="drone">Screen Exception</button>
+     </div>
+     
+
+    <!-- Professional Note -->
+   <div class="meta" id="meta" style="
+    margin-top:10px; 
+    font-size:14px; 
+    color:#fbfcfc; 
+    background: #333; 
+    padding: 10px 12px; 
+    border-left: 4px solid #007bff; 
+    border-radius: 4px;
+    max-width: 100%;
+    line-height: 1.4;
+">
+  <em>
+  <em>Note: Due to paid hosting, this model cannot be hosted online, but you can run it locally on your system. <a href="https://colab.research.google.com/drive/1ej5iRI1pQrv9jhaidBMMvYbpPtDHkUjc?usp=sharing" target="_blank" style="color:#007bff; font-weight:600;">Open Model</a></em>
+
+  </em>
+</div>
+  </div>
+            <!--  -->
+          </div>
+        </section>
+
+
+        <!--  -->
+       <section id="side-panels">
+  <div class="panel alerts-panel">
+    <div class="panel-title">Alerts</div>
+    <ul id="alertsList" class="alerts-list"></ul>
+
+    <!-- Siren audio, hidden by default -->
+    <audio id="alertSound" src="./audio/siren.mp3" preload="auto"></audio>
+  </div>
+
+  <div class="panel logs-panel">
+    <div class="panel-title">Detection Log</div>
+    <div style="max-height: 215px; overflow-y: auto;">
+      <table class="log-table">
+        <thead><tr><th>Time</th><th>Cam</th><th>Label</th><th>Conf.</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+        <footer class="footer">
+          <small>© NSG Tactical — Client-side demo. For production use, integrate secure streams & stronger models.</small>
+        </footer>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Popup -->
+  <div id="popup">
+    <label>
+      <input type="checkbox" id="adminCheck"> You are administrator
+    </label>
+    <div id="fileUploadDiv" style="display:none;">
+      <input type="file" id="imageUpload" accept="image/*">
+    </div>
+    <button id="closePopup">Close</button>
+  </div>
+
+
+  <audio id="alertSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
+
+  <!-- TensorFlow.js & COCO-SSD -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+
+  <!-- UI Interactivity JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Sidebar Toggle Functionality ---
+      const menuBtn = document.getElementById('menuBtn');
+      const mainContainer = document.getElementById('main');
+      
+      menuBtn.addEventListener('click', () => {
+        mainContainer.classList.toggle('sidebar-collapsed');
+      });
+
+      // Optional: Automatically collapse sidebar on smaller screens
+      if (window.innerWidth < 992) {
+        mainContainer.classList.add('sidebar-collapsed');
+      }
+      
+      // Close sidebar when clicking on the overlay on mobile
+      mainContainer.addEventListener('click', (e) => {
+        if (window.innerWidth < 992 && !mainContainer.classList.contains('sidebar-collapsed')) {
+          // Check if the click is outside the sidebar
+          if (e.target.id !== 'side_bar' && !e.target.closest('#side_bar')) {
+              mainContainer.classList.add('sidebar-collapsed');
+          }
+        }
+      });
+
+
+      // --- Popup Functionality ---
+      const userRole = localStorage.getItem('userRole') || 'administrator'; // Default to admin for demo
+      const watchList = document.getElementById('watchList');
+      const popup = document.getElementById('popup');
+      const adminCheck = document.getElementById('adminCheck');
+      const fileUploadDiv = document.getElementById('fileUploadDiv');
+      const imageUpload = document.getElementById('imageUpload');
+      const closePopup = document.getElementById('closePopup');
+
+      // Disable Watch List for analysts
+      if (userRole !== 'administrator') {
+        watchList.style.pointerEvents = 'none'; // cannot click
+        watchList.style.opacity = '0.5';       // visually disabled
+      }
+
+      // When Watch List is clicked
+      watchList.addEventListener('click', () => {
+        if (userRole === 'administrator') {
+          popup.style.display = 'block';
+          adminCheck.checked = true;
+          fileUploadDiv.style.display = 'block';
+        } else {
+          // Note: Using a custom modal/alert for this would be better than the default alert().
+          console.warn("Access denied: Only administrators can use Watch List.");
+        }
+      });
+
+      // Admin checkbox toggle
+      adminCheck.addEventListener('change', () => {
+        fileUploadDiv.style.display = adminCheck.checked ? 'block' : 'none';
+      });
+
+      // Save uploaded image to localStorage
+      imageUpload.addEventListener('change', () => {
+        const file = imageUpload.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            localStorage.setItem('adminImage', e.target.result);
+            console.log('Image saved locally!');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+// Screen Exception button
+document.querySelector('.screen-exception').addEventListener('click', () => {
+    const video = document.getElementById('drone-video');
+    if (video.requestFullscreen) {
+        video.requestFullscreen();
+    } else if (video.webkitRequestFullscreen) { /* Safari */
+        video.webkitRequestFullscreen();
+    } else if (video.msRequestFullscreen) { /* IE11 */
+        video.msRequestFullscreen();
+    }
+});
+
+      // Close popup
+      closePopup.addEventListener('click', () => {
+        popup.style.display = 'none';
+        if (userRole === 'administrator') {
+          adminCheck.checked = true;
+          fileUploadDiv.style.display = 'block';
+        } else {
+          adminCheck.checked = false;
+          fileUploadDiv.style.display = 'none';
+        }
+      });
+      
+      // --- Theme Toggle Functionality ---
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const body = document.body;
+
+      const setTheme = (theme) => {
+        if (theme === 'light') {
+          body.classList.add('light-mode');
+          themeToggleBtn.innerHTML = '<i class="ri-moon-line"></i>';
+          localStorage.setItem('theme', 'light');
+        } else {
+          body.classList.remove('light-mode');
+          themeToggleBtn.innerHTML = '<i class="ri-sun-line"></i>';
+          localStorage.setItem('theme', 'dark');
+        }
+      };
+
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      setTheme(savedTheme);
+
+      themeToggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('light-mode')) {
+          setTheme('dark');
+        } else {
+          setTheme('light');
+        }
+      });
+
+    });
+    document.querySelectorAll('.cam-card .upload').forEach(input => {
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const cam = e.target.dataset.cam;
+    const formData = new FormData();
+    formData.append('video', file);
+
+    const statusEl = document.getElementById(`status-${cam}`);
+    const metaEl = document.getElementById(`meta-${cam}`);
+
+    statusEl.textContent = 'Processing...';
+
+    try {
+      const res = await fetch('http://localhost:5000/analyze', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      console.log(data);
+      statusEl.textContent = 'Done';
+      metaEl.textContent = `Anomalies: ${data.anomalies_detected}`;
+      
+      // Optional: show processed video
+      const videoEl = document.querySelector(`.cam-video[data-cam="${cam}"]`);
+      videoEl.src = data.output;
+      videoEl.play();
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Error';
+    }
+  });
+});
+
+  </script>
+
+  <!-- Core App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

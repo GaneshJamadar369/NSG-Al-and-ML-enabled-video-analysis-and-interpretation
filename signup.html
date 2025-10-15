@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NSG Command Portal — Signup</title>
+  <link rel="shortcut icon" href="./image/logo.jpg" type="image/x-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --panel-bg:#f7f8fa;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --navy:#002663;
+      --accent:#0b5ed7;
+      --border:#d1d5db;
+      --shadow:0 10px 25px rgba(16,24,40,0.1);
+      --radius:12px;
+      font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    }
+
+    html, body {
+      height:100%;
+      margin:0;
+      color:var(--text);
+      background:radial-gradient(circle at 10% 20%, rgba(2,6,23,0.06), transparent 10%), linear-gradient(180deg,#eef2f6 0%, #e9edf2 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .gheader { position:fixed; top:0; left:0; right:0; height:72px; padding:12px 24px; display:flex; align-items:center; gap:16px; background:linear-gradient(90deg,#001f4d,#00307a); color:#fff; box-shadow:0 4px 18px rgba(0,16,56,0.25); z-index:50; }
+    .gheader .emblem { width:56px; height:56px; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.06); }
+    .gheader .emblem img { width:46px; height:46px; object-fit:contain; }
+    .gheader .titles { display:flex; flex-direction:column; line-height:1.1; }
+    .gheader .main-title{ font-family:"Orbitron",sans-serif; font-size:1.15rem; font-weight:600; }
+    .gheader .tag{ font-size:0.78rem; opacity:0.85; }
+
+    .page{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:110px 20px 40px; }
+    .card{ width:540px; background:var(--panel-bg); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; border:1px solid var(--border); transition:transform 0.3s ease, box-shadow 0.3s ease; }
+    .card:hover{ transform: translateY(-3px); box-shadow:0 12px 30px rgba(16,24,40,0.15); }
+    .card .head{ display:flex; gap:10px; align-items:center; padding:14px 18px; border-bottom:1px solid rgba(0,0,0,0.06); }
+    .card .head .titles .title{ font-size:1.1rem; font-weight:600; }
+    .card .head .titles .subtitle{ font-size:0.78rem; color:var(--muted); }
+    .card .head .emblem-mini{ width:42px; height:42px; }
+    .card .head .emblem-mini img{ width:100%; height:100%; object-fit:contain; }
+
+    .card-body{ padding:24px 26px; }
+    .intro{ margin-bottom:14px; color:var(--muted); font-size:0.9rem; }
+    .form-row{ margin-bottom:14px; }
+    label{ display:block; font-size:0.8rem; color:#374151; margin-bottom:6px; font-weight:500; }
+
+    input[type="text"], input[type="password"], input[type="email"], .captcha-input{
+      width:70%; padding:12px 14px; border-radius:8px; border:1px solid #c7cbd0; background:#fff; font-size:0.95rem; color:var(--text); outline:none; transition:box-shadow .18s, border-color .18s;
+    }
+    input::placeholder{ color:#9aa1a8; }
+    input:focus{ border-color: var(--navy); box-shadow: 0 4px 15px rgba(2,40,115,0.12); }
+
+    .pw-row{ display:flex; gap:8px; align-items:center; }
+    .pw-row .pw-field{ flex:1; }
+    .toggle-pw{ background:transparent; border:1px solid var(--border); padding:9px 12px; border-radius:8px; cursor:pointer; color:var(--muted); font-size:0.85rem; font-weight:500; transition:all 0.2s ease; }
+    .toggle-pw:hover{ background:#f1f3f5; }
+
+    .login-btn{ width:100%; padding:14px; margin-top:12px; background:linear-gradient(90deg,var(--navy),var(--accent)); color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:700; font-size:1rem; box-shadow:0 6px 20px rgba(2,40,115,0.12); transition:0.25s; }
+    .login-btn:hover{ box-shadow:0 8px 24px rgba(2,40,115,0.18); }
+    .login-btn[disabled]{ opacity:0.6; cursor:not-allowed; }
+
+    .note{ margin-top:14px; font-size:0.82rem; color:var(--muted); text-align:center; }
+    .error{ margin-top:10px; background:#fff1f0; color:#7f1d1d; padding:10px 12px; border-radius:8px; font-size:0.9rem; display:none; }
+
+    .footer{ text-align:center; padding:12px 0 16px; font-size:0.78rem; color:var(--muted); }
+
+    @media (max-width:420px){
+      .card{ width:95%; }
+      .captcha-canvas{ width:130px; height:45px; }
+      .gheader{ padding:10px 12px; height:64px; gap:10px; }
+      .gheader .main-title{ font-size:1rem; }
+    }
+
+
+        .left{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+
+    }
+
+    .main-title{
+      margin-bottom: 5px;
+    }
+
+
+    footer{
+      text-align: center;
+      height: 20px;
+      width: 100%;
+      background-color: #002661;
+      padding: 25px;
+      color: rgb(213, 211, 211);
+    }
+
+
+
+  </style>
+</head>
+<body>
+  <header class="gheader">
+    <div class="left">
+      <div class="emblem"><img src="./image/logo1.png" alt="NSG emblem" onerror="this.style.display='none'"></div>
+      <div class="titles">
+        <div class="main-title">NSG — National Security Group</div>
+        <div class="tag">Command Portal • Signup</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="card">
+      <div class="head">
+        <div class="emblem-mini"><img src="./image/logo1.png" alt="NSG mini" onerror="this.style.display='none'"></div>
+        <div class="titles">
+          <div class="title">NSG Command Portal — Signup</div>
+          <div class="subtitle">Create your account — Secure Access</div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="intro">Fill the form to create a new account. (Authorized users only)</div>
+
+        <form id="signupForm" autocomplete="off" novalidate>
+          <div class="form-row">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" placeholder="Enter username" required>
+          </div>
+
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="Enter email" required>
+          </div>
+
+          <div class="form-row pw-row">
+            <div class="pw-field">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="Enter password" required>
+            </div>
+            <button type="button" class="toggle-pw" id="togglePw">Show</button>
+          </div>
+
+          <div class="form-row pw-row">
+            <div class="pw-field">
+              <label for="repassword">Re-enter Password</label>
+              <input id="repassword" name="repassword" type="password" placeholder="Re-enter password" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="captchaInput">Security check</label>
+            <div class="captcha-row">
+              <canvas id="captchaCanvas" class="captcha-canvas" width="160" height="50"></canvas>
+              <div class="captcha-controls">
+                <input id="captchaInput" class="captcha-input" placeholder="Enter text shown" required>
+                <div style="display:flex;gap:8px;margin-top:6px;">
+                  <button type="button" id="refreshCaptcha" class="btn-small">Refresh</button>
+                  <button type="button" id="audioCaptcha" class="btn-small">Play</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="error" id="formError"></div>
+
+          <button class="login-btn" type="submit">SIGN UP</button>
+        </form>
+
+        <div class="note" style="margin-top:10px;">
+          Already have an account? <a href="login.html" style="color:#002663; font-weight:600;">Login here</a>
+        </div>
+        <div class="note">This is a client-side demo. Real deployments require server validation & secure auth.</div>
+      </div>
+
+      <div class="footer">© NSG Tactical — Client Demo</div>
+    </div>
+  </main>
+    <footer>
+    @NSG — National Security Group
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-AeYBGhlyVygsqL-HaTXSbaSNGYEHQIM",
+      authDomain: "nsg-project-48222.firebaseapp.com",
+      projectId: "nsg-project-48222",
+      storageBucket: "nsg-project-48222.firebasestorage.app",
+      messagingSenderId: "399968151203",
+      appId: "1:399968151203:web:5803a398a85bafc6544116",
+      measurementId: "G-SZ1GW9FYDL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Captcha logic
+    const captchaCanvas = document.getElementById('captchaCanvas');
+    const captchaInput = document.getElementById('captchaInput');
+    const refreshBtn = document.getElementById('refreshCaptcha');
+    const audioBtn = document.getElementById('audioCaptcha');
+    const ctx = captchaCanvas.getContext('2d');
+    let currentCaptcha = '';
+
+    function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+    function randChar(){ const chars = 'ABCDEFGHJKMNPQRSTWXYZ23456789'; return chars.charAt(Math.floor(Math.random()*chars.length)); }
+    function drawCaptcha(text){
+      ctx.clearRect(0,0,captchaCanvas.width,captchaCanvas.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,captchaCanvas.width,captchaCanvas.height);
+      for(let i=0;i<5;i++){
+        ctx.strokeStyle = `rgba(${randInt(80,140)},${randInt(80,140)},${randInt(80,140)},0.12)`;
+        ctx.beginPath();
+        ctx.moveTo(randInt(0,captchaCanvas.width), randInt(0,captchaCanvas.height));
+        ctx.lineTo(randInt(0,captchaCanvas.width), randInt(0,captchaCanvas.height));
+        ctx.stroke();
+      }
+      const step = captchaCanvas.width / (text.length + 1);
+      for(let i=0;i<text.length;i++){
+        const ch = text[i];
+        const fontSize = randInt(18,22);
+        ctx.save();
+        const x = step*(i+1);
+        const y = captchaCanvas.height/2 + randInt(2,6);
+        ctx.translate(x,y);
+        ctx.rotate((Math.random()-0.5)*0.22);
+        ctx.font = `${fontSize}px "Orbitron", sans-serif`;
+        ctx.fillStyle = ['#002663','#0b5ed7','#0b7fff'][randInt(0,2)];
+        ctx.fillText(ch, -fontSize/2, 0);
+        ctx.restore();
+      }
+    }
+    function newCaptcha(length=5){ let s=''; for(let i=0;i<length;i++) s+=randChar(); currentCaptcha=s; drawCaptcha(s); }
+    refreshBtn.addEventListener('click',()=>newCaptcha());
+    audioBtn.addEventListener('click',()=>{
+      const utter=new SpeechSynthesisUtterance(currentCaptcha.split('').join(' '));
+      utter.lang='en-US';
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    });
+    newCaptcha();
+
+    // Toggle password
+    const pw=document.getElementById('password');
+    const togglePw=document.getElementById('togglePw');
+    togglePw.addEventListener('click',()=>{
+      if(pw.type==='password'){ pw.type='text'; togglePw.textContent='Hide'; }
+      else{ pw.type='password'; togglePw.textContent='Show'; }
+    });
+
+    // Error handler
+    const form=document.getElementById('signupForm');
+    const errorBox=document.getElementById('formError');
+    function showError(msg){ errorBox.textContent=msg; errorBox.style.display='block'; }
+
+    form.addEventListener('submit',async(ev)=>{
+      ev.preventDefault();
+      errorBox.style.display='none';
+      const u=document.getElementById('username').value.trim();
+      const e=document.getElementById('email').value.trim();
+      const p=document.getElementById('password').value;
+      const rp=document.getElementById('repassword').value;
+      const c=document.getElementById('captchaInput').value.trim();
+
+      if(!u||!e||!p||!rp) return showError('Please fill all fields.');
+      if(p!==rp) return showError('Passwords do not match.');
+      if(!c) return showError('Please enter the security text.');
+      if(c.toUpperCase()!==currentCaptcha.toUpperCase()){
+        showError('Security text did not match.');
+        newCaptcha();
+        captchaInput.value='';
+        return;
+      }
+
+      try{
+        const userCred = await createUserWithEmailAndPassword(auth, e, p);
+
+        // Store password as plain text
+        await setDoc(doc(db, "users", userCred.user.uid), {
+          username: u,
+          email: e,
+          password: p, // plain password
+          createdAt: new Date().toISOString()
+        });
+
+        alert('Signup successful! Redirecting to login page...');
+        // Redirect to login.html after user clicks OK
+        window.location.href = "login.html";
+      } catch(err) {
+        console.error(err);
+        showError(err.message || 'Signup failed.');
+      }
+    });
+  </script>
+</body>
+</html>
