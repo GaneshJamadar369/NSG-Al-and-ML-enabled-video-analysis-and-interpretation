@@ -7,7 +7,8 @@
 ## Login Page
 
 ![login page](readme_images/login.png)
-choose adminstrator for better experience
+
+Choose Adminstrator for better experience
 ![adminstrator](readme_images/administrator.png)
 
 ## Multicam
