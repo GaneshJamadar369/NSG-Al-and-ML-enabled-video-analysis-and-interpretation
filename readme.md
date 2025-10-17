@@ -7,7 +7,6 @@
 ## Login Page
 
 ![login page](readme_images/login.png)
-
 Choose Adminstrator for better experience
 ![adminstrator](readme_images/administrator.png)
 
